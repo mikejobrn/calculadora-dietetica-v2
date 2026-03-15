@@ -55,16 +55,25 @@ export default function EstimarPage() {
     setErroFormula(null);
     setResultado(null);
 
-    const escopo: Record<string, number> = {};
+    const escopo: Record<string, any> = {};
     
     // Preparar variáveis de escopo
     for (const p of metodoAtual.parametros) {
-        const val = parseFloat(valoresParams[p.nome]);
-        if (isNaN(val)) {
-            setErroFormula(`Preencha o parâmetro: ${p.label || p.nome}`);
-            return;
+        const strVal = valoresParams[p.nome];
+        if (p.tipo === "number") {
+            const val = parseFloat(strVal);
+            if (isNaN(val)) {
+                setErroFormula(`Preencha o parâmetro (número): ${p.label || p.nome}`);
+                return;
+            }
+            escopo[p.nome] = val;
+        } else {
+            if (!strVal || strVal.trim() === "") {
+                setErroFormula(`Preencha o parâmetro: ${p.label || p.nome}`);
+                return;
+            }
+            escopo[p.nome] = strVal.trim();
         }
-        escopo[p.nome] = val;
     }
 
     const res: Record<string, number> = {};
@@ -143,8 +152,8 @@ export default function EstimarPage() {
                                  <div key={idx} className="space-y-1">
                                      <Label className="text-xs">{p.label || p.nome}</Label>
                                      <Input 
-                                        type="number" 
-                                        step="any"
+                                        type={p.tipo === "number" ? "number" : "text"} 
+                                        step={p.tipo === "number" ? "any" : undefined}
                                         value={valoresParams[p.nome] || ""} 
                                         onChange={(e) => setValoresParams({...valoresParams, [p.nome]: e.target.value})} 
                                      />
