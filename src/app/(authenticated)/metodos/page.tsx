@@ -60,7 +60,6 @@ export default function MetodosPage() {
   };
 
   const abrirEditar = (m: Metodo) => {
-    if (userPapel !== "admin") return;
     setEditando(m);
     setNome(m.nome);
     setReferencia(m.referencia || "");
@@ -133,55 +132,62 @@ export default function MetodosPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Fórmulas</h1>
         {userPapel === "admin" && (
-        <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) limparForm(); }}>
-          <DialogTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
+          <Button onClick={() => { limparForm(); setDialogOpen(true); }} className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
             + Novo Método
-          </DialogTrigger>
-          <DialogContent className="max-h-[85vh] overflow-y-auto max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>{editando ? "Editar" : "Novo"} Método de Estimativa</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-xs">Nome / Título</Label>
-                  <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex: Harris-Benedict" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Referência (opcional)</Label>
-                  <Input value={referencia} onChange={(e) => setReferencia(e.target.value)} placeholder="Livro, Artigo..." />
-                </div>
-              </div>
+          </Button>
+        )}
+      </div>
 
+      <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) limparForm(); }}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {userPapel === "admin" ? (editando ? "Editar Método de Estimativa" : "Novo Método de Estimativa") : "Detalhes da Fórmula"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs font-mono">Parâmetros Esperados (JSON Array)</Label>
-                <textarea 
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] font-mono text-xs"
-                  value={parametrosStr} 
-                  onChange={(e) => setParametrosStr(e.target.value)}
-                />
+                <Label className="text-xs">Nome / Título</Label>
+                <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Ex: Harris-Benedict" disabled={userPapel !== "admin"} />
               </div>
-
               <div className="space-y-1">
-                <Label className="text-xs font-mono">Fórmulas (JSON Object)</Label>
-                <textarea 
-                  className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] font-mono text-xs"
-                  value={formulasStr} 
-                  onChange={(e) => setFormulasStr(e.target.value)}
-                />
+                <Label className="text-xs">Referência (opcional)</Label>
+                <Input value={referencia} onChange={(e) => setReferencia(e.target.value)} placeholder="Livro, Artigo..." disabled={userPapel !== "admin"} />
               </div>
+            </div>
 
-              {error && (
-                <div className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">{error}</div>
-              )}
+            <div className="space-y-1">
+              <Label className="text-xs font-mono">Parâmetros Esperados (JSON Array)</Label>
+              <textarea 
+                className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] font-mono text-xs"
+                value={parametrosStr} 
+                onChange={(e) => setParametrosStr(e.target.value)}
+                disabled={userPapel !== "admin"}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <Label className="text-xs font-mono">Fórmulas (JSON Object)</Label>
+              <textarea 
+                className="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 min-h-[100px] font-mono text-xs"
+                value={formulasStr} 
+                onChange={(e) => setFormulasStr(e.target.value)}
+                disabled={userPapel !== "admin"}
+              />
+            </div>
+
+            {error && (
+              <div className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">{error}</div>
+            )}
+            {userPapel === "admin" && (
               <Button onClick={handleSalvar} className="w-full" disabled={salvando || !nome}>
                 {salvando ? "Salvando..." : editando ? "Salvar Alterações" : "Criar Método"}
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-        )}
-      </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <div className="flex gap-2">
         <Input placeholder="Buscar por método..." value={busca} onChange={(e) => setBusca(e.target.value)} className="flex-1" />
@@ -195,7 +201,7 @@ export default function MetodosPage() {
       ) : (
         <div className="space-y-2">
           {metodosFiltrados.map((m) => (
-            <Card key={m.id} className={userPapel === "admin" ? "cursor-pointer hover:shadow-md transition-shadow" : "transition-shadow"} onClick={() => abrirEditar(m)}>
+            <Card key={m.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => abrirEditar(m)}>
               <CardContent className="py-3 flex items-center justify-between">
                 <div className="min-w-0">
                   <p className="font-medium text-sm truncate">{m.nome}</p>

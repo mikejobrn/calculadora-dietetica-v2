@@ -217,9 +217,9 @@ export default function ProdutosPage() {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="dieta_completa">Dieta Completa</SelectItem>
-                      <SelectItem value="modulo_proteina">Mód. Proteína</SelectItem>
-                      <SelectItem value="modulo_fibra">Mód. Fibra</SelectItem>
+                      <SelectItem value="dieta_completa" label="Dieta Completa">Dieta Completa</SelectItem>
+                      <SelectItem value="modulo_proteina" label="Mód. Proteína">Mód. Proteína</SelectItem>
+                      <SelectItem value="modulo_fibra" label="Mód. Fibra">Mód. Fibra</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -275,10 +275,10 @@ export default function ProdutosPage() {
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="todos">Todos</SelectItem>
-            <SelectItem value="dieta_completa">Dietas</SelectItem>
-            <SelectItem value="modulo_proteina">Proteínas</SelectItem>
-            <SelectItem value="modulo_fibra">Fibras</SelectItem>
+            <SelectItem value="todos" label="Todos">Todos</SelectItem>
+            <SelectItem value="dieta_completa" label="Dietas">Dietas</SelectItem>
+            <SelectItem value="modulo_proteina" label="Proteínas">Proteínas</SelectItem>
+            <SelectItem value="modulo_fibra" label="Fibras">Fibras</SelectItem>
           </SelectContent>
         </Select>
       </div>

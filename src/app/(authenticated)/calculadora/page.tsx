@@ -9,6 +9,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { EstimativaModal } from "@/components/estimativa-modal";
 import {
   calcularIMC,
   classificarIMC,
@@ -209,9 +210,10 @@ export default function CalculadoraPage() {
           </div>
           <div className="flex gap-2">
             <Button onClick={handleCalcular} className="flex-1">Calcular</Button>
-            <Link href="/calculadora/estimar" className="flex-1 inline-flex items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 transition-colors">
-              Estimar
-            </Link>
+            <EstimativaModal onApply={(p, a) => {
+              if (p !== undefined) setPeso(p.toString());
+              if (a !== undefined) setAltura(a.toString());
+            }} />
           </div>
         </CardContent>
       </Card>
@@ -306,13 +308,13 @@ export default function CalculadoraPage() {
                 <Label className="text-xs">Dieta</Label>
                 <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val || "")}>
                   <SelectTrigger>
-                    <SelectValue>
-                      {stageDietaId ? dietasCompletas.find((p) => p.id === stageDietaId)?.nome : "Selecione a dieta"}
+                    <SelectValue placeholder="Selecione a dieta">
+                      {stageDietaId ? dietasCompletas.find((p) => p.id === stageDietaId)?.nome : null}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {dietasCompletas.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -328,14 +330,14 @@ export default function CalculadoraPage() {
                 <Label className="text-xs">Mód. Proteína</Label>
                 <Select value={stageProteinaId} onValueChange={(val) => setStageProteinaId(val || "")}>
                   <SelectTrigger>
-                    <SelectValue>
-                      {stageProteinaId === "none" || !stageProteinaId ? "Nenhum" : modulosProteina.find((p) => p.id === stageProteinaId)?.nome}
+                    <SelectValue placeholder="Nenhum">
+                      {stageProteinaId === "none" || !stageProteinaId ? null : modulosProteina.find((p) => p.id === stageProteinaId)?.nome}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Nenhum</SelectItem>
+                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
                     {modulosProteina.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -351,14 +353,14 @@ export default function CalculadoraPage() {
                 <Label className="text-xs">Mód. Fibra</Label>
                 <Select value={stageFibraId} onValueChange={(val) => setStageFibraId(val || "")}>
                   <SelectTrigger>
-                    <SelectValue>
-                      {stageFibraId === "none" || !stageFibraId ? "Nenhum" : modulosFibra.find((p) => p.id === stageFibraId)?.nome}
+                    <SelectValue placeholder="Nenhum">
+                      {stageFibraId === "none" || !stageFibraId ? null : modulosFibra.find((p) => p.id === stageFibraId)?.nome}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none">Nenhum</SelectItem>
+                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
                     {modulosFibra.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
+                      <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
