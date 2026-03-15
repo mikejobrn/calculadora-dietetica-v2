@@ -155,31 +155,36 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                          
                          <div className="grid grid-cols-2 gap-3 pt-2">
                              {metodoAtual.parametros.map((p, idx) => (
-                                 <div key={idx} className="space-y-2 col-span-2 sm:col-span-1">
+                                 <div key={idx} className="space-y-1 col-span-1">
                                      <Label className="text-xs leading-none">{p.label || p.nome}</Label>
                                      {p.tipo === "select" && p.opcoes ? (
                                          p.opcoes.length <= 5 ? (
                                                  <RadioGroup 
                                                  value={valoresParams[p.nome] || ""}
                                                  onValueChange={(val: string) => setValoresParams({...valoresParams, [p.nome]: val})}
-                                                 className="flex flex-col space-y-2 pt-1"
+                                                 className="grid grid-cols-2 gap-2 pt-1"
                                              >
-                                                {p.opcoes.map((op, oIdx) => (
-                                                    <div className="flex items-center space-x-2" key={oIdx}>
-                                                        <RadioGroupItem value={op.value} id={`${p.nome}-${oIdx}`} />
-                                                        <Label htmlFor={`${p.nome}-${oIdx}`} className="font-normal text-sm cursor-pointer leading-none">{op.label}</Label>
+                                                {p.opcoes.map((op, oIdx) => {
+                                                    const isSelected = valoresParams[p.nome] === op.value;
+                                                    return (
+                                                    <div className="relative" key={oIdx}>
+                                                        <RadioGroupItem value={op.value} id={`${p.nome}-${oIdx}`} className="sr-only" />
+                                                        <Label 
+                                                            htmlFor={`${p.nome}-${oIdx}`} 
+                                                            className={`flex items-center justify-center rounded-md px-2 py-1.5 text-center transition cursor-pointer text-xs font-medium h-full leading-tight ${isSelected ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}
+                                                        >
+                                                            {op.label}
+                                                        </Label>
                                                     </div>
-                                                ))}
+                                                )})}
                                              </RadioGroup>
                                          ) : (
                                              <Select 
                                                  value={valoresParams[p.nome] || ""} 
                                                  onValueChange={(val) => setValoresParams({...valoresParams, [p.nome]: val || ""})}
                                              >
-                                                 <SelectTrigger className="h-8 max-w-[200px] bg-background">
-                                                     <SelectValue placeholder="Selecione">
-                                                         {valoresParams[p.nome] ? p.opcoes.find(op => op.value === valoresParams[p.nome])?.label : null}
-                                                     </SelectValue>
+                                                 <SelectTrigger className="h-8 bg-background">
+                                                     <SelectValue placeholder="Selecione" />
                                                  </SelectTrigger>
                                                  <SelectContent>
                                                      {p.opcoes.map((op: any, oIdx: number) => (
@@ -195,7 +200,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                             min={p.tipo === "number" ? "0" : undefined}
                                             value={valoresParams[p.nome] || ""} 
                                             onChange={(e) => setValoresParams({...valoresParams, [p.nome]: e.target.value})} 
-                                            className={`h-8 px-2 text-sm max-w-[150px] ${p.tipo === "number" ? "text-right" : ""}`}
+                                            className={`h-8 px-2 text-sm ${p.tipo === "number" ? "text-right w-full" : "w-full"}`}
                                          />
                                      )}
                                  </div>
