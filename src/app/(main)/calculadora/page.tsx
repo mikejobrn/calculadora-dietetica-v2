@@ -206,7 +206,7 @@ export default function CalculadoraPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label htmlFor="peso" className="text-xs">Peso (kg)</Label>
               <Input id="peso" type="number" min="0" step="0.1" value={peso} onChange={(e) => setPeso(e.target.value)} inputMode="decimal" />
@@ -215,10 +215,10 @@ export default function CalculadoraPage() {
               <Label htmlFor="altura" className="text-xs">Altura (m)</Label>
               <Input id="altura" type="number" min="0" step="0.01" value={altura} onChange={(e) => setAltura(e.target.value)} inputMode="decimal" />
             </div>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="idade" className="text-xs">Idade (anos)</Label>
-            <Input id="idade" type="number" min="0" value={idade} onChange={(e) => setIdade(e.target.value)} className="max-w-[50%]" inputMode="numeric" />
+            <div className="space-y-1">
+              <Label htmlFor="idade" className="text-xs">Idade (anos)</Label>
+              <Input id="idade" type="number" min="0" value={idade} onChange={(e) => setIdade(e.target.value)} inputMode="numeric" />
+            </div>
           </div>
           <div className="flex gap-2">
             <Button onClick={handleCalcular} className="flex-1">Calcular</Button>
