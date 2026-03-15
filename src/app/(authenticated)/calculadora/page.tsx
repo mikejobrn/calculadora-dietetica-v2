@@ -299,7 +299,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Duração (h)</Label>
-                <Input type="number" min="0" step="0.5" value={stageDuracao} onChange={(e) => setStageDuracao(e.target.value)} />
+                <Input type="number" min="0" step="0.5" value={stageDuracao} onChange={(e) => setStageDuracao(e.target.value)} className="text-right" />
               </div>
             </div>
 
@@ -321,7 +321,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Vol (ml)</Label>
-                <Input type="number" min="0" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} />
+                <Input type="number" min="0" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} className="text-right" />
               </div>
             </div>
 
@@ -330,11 +330,10 @@ export default function CalculadoraPage() {
                 <Label className="text-xs">Mód. Proteína</Label>
                 <Select value={stageProteinaId} onValueChange={(val) => setStageProteinaId(val || "")}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Nenhum">
-                      {!stageProteinaId ? null : modulosProteina.find((p) => p.id === stageProteinaId)?.nome}
-                    </SelectValue>
+                    <SelectValue placeholder="Nenhum" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
                     {modulosProteina.map((p) => (
                       <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
@@ -343,7 +342,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Qtd (g)</Label>
-                <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId} />
+                <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId || stageProteinaId === "none"} className="text-right" />
               </div>
             </div>
 
@@ -352,11 +351,10 @@ export default function CalculadoraPage() {
                 <Label className="text-xs">Mód. Fibra</Label>
                 <Select value={stageFibraId} onValueChange={(val) => setStageFibraId(val || "")}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Nenhum">
-                      {!stageFibraId ? null : modulosFibra.find((p) => p.id === stageFibraId)?.nome}
-                    </SelectValue>
+                    <SelectValue placeholder="Nenhum" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
                     {modulosFibra.map((p) => (
                       <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
@@ -365,7 +363,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Qtd (g)</Label>
-                <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId} />
+                <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId || stageFibraId === "none"} className="text-right" />
               </div>
             </div>
 
