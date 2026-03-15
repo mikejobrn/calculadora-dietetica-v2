@@ -56,6 +56,7 @@ export default function ProdutosPage() {
   const [salvando, setSalvando] = useState(false);
   const [analisando, setAnalisando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userPapel, setUserPapel] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -63,7 +64,12 @@ export default function ProdutosPage() {
 
   const carregarProdutos = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user) {
+      const { data: perfil } = await supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single();
+      if (perfil) setUserPapel(perfil.papel);
+    }
+    const { data, error } = await supabase
       .from("produtos_alimentares")
       .select("*")
       .order("tipo")
@@ -176,6 +182,7 @@ export default function ProdutosPage() {
     <div className="space-y-4 pb-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Produtos</h1>
+        {userPapel === "admin" && (
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) limparForm(); }}>
           <DialogTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
             + Novo
@@ -198,7 +205,11 @@ export default function ProdutosPage() {
                 <div className="space-y-1">
                   <Label className="text-xs">Tipo</Label>
                   <Select value={tipo} onValueChange={(val) => setTipo(val || "dieta_completa")}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue>
+                        {tipo === "dieta_completa" ? "Dieta Completa" : tipo === "modulo_proteina" ? "Mód. Proteína" : tipo === "modulo_fibra" ? "Mód. Fibra" : "Dieta Completa"}
+                      </SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="dieta_completa">Dieta Completa</SelectItem>
                       <SelectItem value="modulo_proteina">Mód. Proteína</SelectItem>
@@ -244,13 +255,18 @@ export default function ProdutosPage() {
             </div>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       {/* Filters */}
       <div className="flex gap-2">
         <Input placeholder="Buscar..." value={busca} onChange={(e) => setBusca(e.target.value)} className="flex-1" />
         <Select value={filtroTipo} onValueChange={(val) => setFiltroTipo(val || "todos")}>
-          <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue>
+              {filtroTipo === "todos" ? "Todos" : filtroTipo === "dieta_completa" ? "Dietas" : filtroTipo === "modulo_proteina" ? "Proteínas" : filtroTipo === "modulo_fibra" ? "Fibras" : "Todos"}
+            </SelectValue>
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos</SelectItem>
             <SelectItem value="dieta_completa">Dietas</SelectItem>
@@ -268,7 +284,7 @@ export default function ProdutosPage() {
       ) : (
         <div className="space-y-2">
           {produtosFiltrados.map((p) => (
-            <Card key={p.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => abrirEditar(p)}>
+            <Card key={p.id} className={userPapel === "admin" ? "cursor-pointer hover:shadow-md transition-shadow" : "transition-shadow"} onClick={() => { if (userPapel === "admin") abrirEditar(p); }}>
               <CardContent className="py-3 flex items-center justify-between">
                 <div className="min-w-0">
                   <p className="font-medium text-sm truncate">{p.nome}</p>
@@ -280,11 +296,13 @@ export default function ProdutosPage() {
                     {p.densidade_calorica && <span className="text-xs text-muted-foreground">{p.densidade_calorica} kcal/ml</span>}
                   </div>
                 </div>
+                {userPapel === "admin" && (
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive shrink-0" onClick={(e) => { e.stopPropagation(); handleDeletar(p.id); }}>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                   </svg>
                 </Button>
+                )}
               </CardContent>
             </Card>
           ))}

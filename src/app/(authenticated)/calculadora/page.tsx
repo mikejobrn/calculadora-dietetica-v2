@@ -195,16 +195,16 @@ export default function CalculadoraPage() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="peso" className="text-xs">Peso (kg)</Label>
-              <Input id="peso" type="number" step="0.1" placeholder="65.0" value={peso} onChange={(e) => setPeso(e.target.value)} />
+              <Input id="peso" type="number" step="0.1" value={peso} onChange={(e) => setPeso(e.target.value)} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="altura" className="text-xs">Altura (m)</Label>
-              <Input id="altura" type="number" step="0.01" placeholder="1.63" value={altura} onChange={(e) => setAltura(e.target.value)} />
+              <Input id="altura" type="number" step="0.01" value={altura} onChange={(e) => setAltura(e.target.value)} />
             </div>
           </div>
           <div className="space-y-1">
             <Label htmlFor="idade" className="text-xs">Idade (anos)</Label>
-            <Input id="idade" type="number" placeholder="60" value={idade} onChange={(e) => setIdade(e.target.value)} className="max-w-[50%]" />
+            <Input id="idade" type="number" value={idade} onChange={(e) => setIdade(e.target.value)} className="max-w-[50%]" />
           </div>
           <div className="flex gap-2">
             <Button onClick={handleCalcular} className="flex-1">Calcular</Button>
@@ -304,7 +304,11 @@ export default function CalculadoraPage() {
               <div className="space-y-1">
                 <Label className="text-xs">Dieta</Label>
                 <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val || "")}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>
+                      {stageDietaId ? dietasCompletas.find((p) => p.id === stageDietaId)?.nome : "Selecione a dieta"}
+                    </SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     {dietasCompletas.map((p) => (
                       <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
@@ -322,7 +326,11 @@ export default function CalculadoraPage() {
               <div className="space-y-1">
                 <Label className="text-xs">Mód. Proteína</Label>
                 <Select value={stageProteinaId} onValueChange={(val) => setStageProteinaId(val || "")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>
+                      {stageProteinaId === "none" || !stageProteinaId ? "Nenhum" : modulosProteina.find((p) => p.id === stageProteinaId)?.nome}
+                    </SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhum</SelectItem>
                     {modulosProteina.map((p) => (
@@ -341,7 +349,11 @@ export default function CalculadoraPage() {
               <div className="space-y-1">
                 <Label className="text-xs">Mód. Fibra</Label>
                 <Select value={stageFibraId} onValueChange={(val) => setStageFibraId(val || "")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue>
+                      {stageFibraId === "none" || !stageFibraId ? "Nenhum" : modulosFibra.find((p) => p.id === stageFibraId)?.nome}
+                    </SelectValue>
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhum</SelectItem>
                     {modulosFibra.map((p) => (
