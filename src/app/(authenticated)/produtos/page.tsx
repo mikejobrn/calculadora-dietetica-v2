@@ -183,29 +183,34 @@ export default function ProdutosPage() {
     <div className="space-y-4 pb-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Produtos</h1>
-        {userPapel === "admin" && (
         <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) limparForm(); }}>
+          {userPapel === "admin" && (
           <DialogTrigger className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3">
             + Novo
           </DialogTrigger>
+          )}
           <DialogContent className="max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editando ? "Editar" : "Novo"} Produto</DialogTitle>
+              <DialogTitle>{userPapel === "admin" ? (editando ? "Editar Produto" : "Novo Produto") : "Detalhes do Produto"}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3 pt-2">
-              <Button type="button" variant="secondary" className="w-full font-medium" onClick={() => fileInputRef.current?.click()} disabled={analisando}>
-                {analisando ? "Analisando imagem..." : "📸 Preenchimento Inteligente por Foto (OCR)"}
-              </Button>
-              <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleImageUpload} />
+              {userPapel === "admin" && (
+                <>
+                  <Button type="button" variant="secondary" className="w-full font-medium" onClick={() => fileInputRef.current?.click()} disabled={analisando}>
+                    {analisando ? "Analisando imagem..." : "📸 Preenchimento Inteligente por Foto (OCR)"}
+                  </Button>
+                  <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleImageUpload} />
+                </>
+              )}
               
               <div className="space-y-1">
                 <Label className="text-xs">Nome</Label>
-                <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome do produto" />
+                <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome do produto" readOnly={userPapel !== "admin"} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label className="text-xs">Tipo</Label>
-                  <Select value={tipo} onValueChange={(val) => setTipo(val || "dieta_completa")}>
+                  <Select value={tipo} onValueChange={(val) => setTipo(val || "dieta_completa")} disabled={userPapel !== "admin"}>
                     <SelectTrigger>
                       <SelectValue>
                         {tipo === "dieta_completa" ? "Dieta Completa" : tipo === "modulo_proteina" ? "Mód. Proteína" : tipo === "modulo_fibra" ? "Mód. Fibra" : "Dieta Completa"}
@@ -220,7 +225,7 @@ export default function ProdutosPage() {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Fabricante</Label>
-                  <Input value={fabricante} onChange={(e) => setFabricante(e.target.value)} placeholder="Fabricante" />
+                  <Input value={fabricante} onChange={(e) => setFabricante(e.target.value)} placeholder="Fabricante" readOnly={userPapel !== "admin"} />
                 </div>
               </div>
               <Separator />
@@ -228,35 +233,36 @@ export default function ProdutosPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label className="text-xs">Dens. Calórica (kcal/ml)</Label>
-                  <Input type="number" step="0.01" value={densidadeCalorica} onChange={(e) => setDensidadeCalorica(e.target.value)} />
+                  <Input type="number" step="0.01" value={densidadeCalorica} onChange={(e) => setDensidadeCalorica(e.target.value)} readOnly={userPapel !== "admin"} />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Proteína (g/L)</Label>
-                  <Input type="number" step="0.1" value={proteina} onChange={(e) => setProteina(e.target.value)} />
+                  <Input type="number" step="0.1" value={proteina} onChange={(e) => setProteina(e.target.value)} readOnly={userPapel !== "admin"} />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Carboidrato (g/L)</Label>
-                  <Input type="number" step="0.1" value={carboidrato} onChange={(e) => setCarboidrato(e.target.value)} />
+                  <Input type="number" step="0.1" value={carboidrato} onChange={(e) => setCarboidrato(e.target.value)} readOnly={userPapel !== "admin"} />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Lipídio (g/L)</Label>
-                  <Input type="number" step="0.1" value={lipidio} onChange={(e) => setLipidio(e.target.value)} />
+                  <Input type="number" step="0.1" value={lipidio} onChange={(e) => setLipidio(e.target.value)} readOnly={userPapel !== "admin"} />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Fibra (g/L)</Label>
-                  <Input type="number" step="0.1" value={fibra} onChange={(e) => setFibra(e.target.value)} />
+                  <Input type="number" step="0.1" value={fibra} onChange={(e) => setFibra(e.target.value)} readOnly={userPapel !== "admin"} />
                 </div>
               </div>
               {error && (
                 <div className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">{error}</div>
               )}
-              <Button onClick={handleSalvar} className="w-full" disabled={salvando || !nome}>
-                {salvando ? "Salvando..." : editando ? "Salvar" : "Criar Produto"}
-              </Button>
+              {userPapel === "admin" && (
+                 <Button onClick={handleSalvar} className="w-full" disabled={salvando || !nome}>
+                   {salvando ? "Salvando..." : editando ? "Salvar" : "Criar Produto"}
+                 </Button>
+              )}
             </div>
           </DialogContent>
         </Dialog>
-        )}
       </div>
 
       {/* Filters */}
@@ -285,7 +291,7 @@ export default function ProdutosPage() {
       ) : (
         <div className="space-y-2">
           {produtosFiltrados.map((p) => (
-            <Card key={p.id} className={userPapel === "admin" ? "cursor-pointer hover:shadow-md transition-shadow" : "transition-shadow"} onClick={() => { if (userPapel === "admin") abrirEditar(p); }}>
+            <Card key={p.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => abrirEditar(p)}>
               <CardContent className="py-3 flex items-center justify-between">
                 <div className="min-w-0">
                   <p className="font-medium text-sm truncate">{p.nome}</p>
