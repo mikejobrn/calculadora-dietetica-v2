@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -87,6 +86,15 @@ export default function CalculadoraPage() {
   const [stageFibraId, setStageFibraId] = useState("");
   const [stageMedidaFibra, setStageMedidaFibra] = useState("");
 
+  const focusInputById = useCallback((id: string) => {
+    window.setTimeout(() => {
+      const el = document.getElementById(id) as HTMLInputElement | null;
+      if (!el) return;
+      el.focus();
+      el.select?.();
+    }, 0);
+  }, []);
+
   // Load products from Supabase
   useEffect(() => {
     const supabase = createClient();
@@ -112,7 +120,8 @@ export default function CalculadoraPage() {
     setClassificacao(i >= 60 ? classificarIMCIdoso(imcVal) : classificarIMC(imcVal));
     const pi = calcularPesoIdeal(a, i);
     setPesoIdeal(pi);
-  }, [peso, altura, idade]);
+    focusInputById("fator-calorico");
+  }, [peso, altura, idade, focusInputById]);
 
   // Calculate needs
   const handleCalcularNecessidades = useCallback(() => {
@@ -124,7 +133,8 @@ export default function CalculadoraPage() {
       fatorProteico: parseFloat(fatorProteico),
     });
     setNecessidades(n);
-  }, [peso, pesoIdeal, fatorCalorico, fatorProteico]);
+    focusInputById("stage-horario");
+  }, [peso, pesoIdeal, fatorCalorico, fatorProteico, focusInputById]);
 
   // Add stage
   const handleAdicionarEtapa = () => {
@@ -163,6 +173,8 @@ export default function CalculadoraPage() {
       const necPTN = usarPTNEstimado ? necessidades.proteicoEstimado : necessidades.proteicoIdeal;
       setResumo(calcularResumoNutricional(novasEtapas, necCal, necPTN, parseFloat(peso)));
     }
+
+    focusInputById("stage-horario");
   };
 
   const handleRemoverEtapa = (index: number) => {
@@ -243,11 +255,11 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">Nec. calórica (kcal/kg)</Label>
-                <Input type="number" min="0" step="1" value={fatorCalorico} onChange={(e) => setFatorCalorico(e.target.value)} inputMode="numeric" />
+                <Input id="fator-calorico" type="number" min="0" step="1" value={fatorCalorico} onChange={(e) => setFatorCalorico(e.target.value)} inputMode="numeric" />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Nec. proteica (g/kg)</Label>
-                <Input type="number" min="0" step="0.1" value={fatorProteico} onChange={(e) => setFatorProteico(e.target.value)} inputMode="decimal" />
+                <Input id="fator-proteico" type="number" min="0" step="0.1" value={fatorProteico} onChange={(e) => setFatorProteico(e.target.value)} inputMode="decimal" />
               </div>
             </div>
 
@@ -295,7 +307,7 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Horário</Label>
-                <Input type="time" value={stageHorario} onChange={(e) => setStageHorario(e.target.value)} className="w-full" />
+                <Input id="stage-horario" type="time" value={stageHorario} onChange={(e) => setStageHorario(e.target.value)} className="w-full" />
               </div>
               <div className="w-full space-y-1">
                 <Label className="text-xs">Duração (h)</Label>
