@@ -108,8 +108,11 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground">
-          Calculadora Dietética Profissional
+        <p className="text-center text-sm text-muted-foreground">
+          Não possui conta?{" "}
+          <a href="/registro" className="text-primary hover:underline font-medium">
+            Criar conta
+          </a>
         </p>
       </div>
     </div>
