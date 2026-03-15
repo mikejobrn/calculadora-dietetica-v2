@@ -197,16 +197,16 @@ export default function CalculadoraPage() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="peso" className="text-xs">Peso (kg)</Label>
-              <Input id="peso" type="number" min="0" step="0.1" value={peso} onChange={(e) => setPeso(e.target.value)} />
+              <Input id="peso" type="number" min="0" step="0.1" value={peso} onChange={(e) => setPeso(e.target.value)} inputMode="decimal" />
             </div>
             <div className="space-y-1">
               <Label htmlFor="altura" className="text-xs">Altura (m)</Label>
-              <Input id="altura" type="number" min="0" step="0.01" value={altura} onChange={(e) => setAltura(e.target.value)} />
+              <Input id="altura" type="number" min="0" step="0.01" value={altura} onChange={(e) => setAltura(e.target.value)} inputMode="decimal" />
             </div>
           </div>
           <div className="space-y-1">
             <Label htmlFor="idade" className="text-xs">Idade (anos)</Label>
-            <Input id="idade" type="number" min="0" value={idade} onChange={(e) => setIdade(e.target.value)} className="max-w-[50%]" />
+            <Input id="idade" type="number" min="0" value={idade} onChange={(e) => setIdade(e.target.value)} className="max-w-[50%]" inputMode="numeric" />
           </div>
           <div className="flex gap-2">
             <Button onClick={handleCalcular} className="flex-1">Calcular</Button>
@@ -243,11 +243,11 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">Nec. calórica (kcal/kg)</Label>
-                <Input type="number" min="0" step="1" value={fatorCalorico} onChange={(e) => setFatorCalorico(e.target.value)} />
+                <Input type="number" min="0" step="1" value={fatorCalorico} onChange={(e) => setFatorCalorico(e.target.value)} inputMode="numeric" />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Nec. proteica (g/kg)</Label>
-                <Input type="number" min="0" step="0.1" value={fatorProteico} onChange={(e) => setFatorProteico(e.target.value)} />
+                <Input type="number" min="0" step="0.1" value={fatorProteico} onChange={(e) => setFatorProteico(e.target.value)} inputMode="decimal" />
               </div>
             </div>
 
@@ -299,7 +299,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Duração (h)</Label>
-                <Input type="number" min="0" step="0.5" value={stageDuracao} onChange={(e) => setStageDuracao(e.target.value)} className="text-right" />
+                <Input type="number" min="0" step="0.5" value={stageDuracao} onChange={(e) => setStageDuracao(e.target.value)} className="text-right" inputMode="decimal" />
               </div>
             </div>
 
@@ -321,7 +321,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Vol (ml)</Label>
-                <Input type="number" min="0" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} className="text-right" />
+                <Input type="number" min="0" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} className="text-right" inputMode="numeric" />
               </div>
             </div>
 
@@ -342,7 +342,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Qtd (g)</Label>
-                <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId || stageProteinaId === "none"} className="text-right" />
+                <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId || stageProteinaId === "none"} className="text-right" inputMode="decimal" />
               </div>
             </div>
 
@@ -363,7 +363,7 @@ export default function CalculadoraPage() {
               </div>
               <div className="w-24 space-y-1">
                 <Label className="text-xs">Qtd (g)</Label>
-                <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId || stageFibraId === "none"} className="text-right" />
+                <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId || stageFibraId === "none"} className="text-right" inputMode="decimal" />
               </div>
             </div>
 

@@ -96,16 +96,11 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
 
   const handleAppyResult = () => {
     if (!resultado) return;
-    // Find estimated peso and altura (keys can be like "peso_estimado", "altura_estimada", or "peso", "altura")
     const pesoKey = Object.keys(resultado).find(k => k.toLowerCase().includes("peso"));
     const altKey = Object.keys(resultado).find(k => k.toLowerCase().includes("altura"));
     
-    // We pass extracted keys back to the parent
     onApply(pesoKey ? resultado[pesoKey] : undefined, altKey ? resultado[altKey] : undefined);
-    
-    // Close modal
     setOpen(false);
-    // Reset modal state
     setResultado(null);
     setValoresParams({});
     setErroFormula(null);
@@ -116,7 +111,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
       <DialogTrigger render={<Button variant="outline" className="flex-1 w-full bg-background" />}>
         Estimar
       </DialogTrigger>
-      <DialogContent className="max-w-[400px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[450px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Estimar Valores</DialogTitle>
         </DialogHeader>
@@ -153,25 +148,27 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                          
                          <Separator />
                          
-                         <div className="grid grid-cols-2 gap-3 pt-2">
-                             {metodoAtual.parametros.map((p, idx) => (
-                                 <div key={idx} className="space-y-1 col-span-1">
-                                     <Label className="text-xs leading-none">{p.label || p.nome}</Label>
+                         <div className="grid grid-cols-2 gap-x-4 gap-y-6 pt-2">
+                             {[...metodoAtual.parametros]
+                               .sort((a, b) => (a.tipo === "select" ? -1 : 1))
+                               .map((p, idx) => (
+                                 <div key={idx} className={`space-y-1 ${p.tipo === "select" && p.opcoes && p.opcoes.length > 2 ? "col-span-2" : "col-span-1"}`}>
+                                     <Label className="text-xs font-semibold text-muted-foreground leading-none">{p.label || p.nome}</Label>
                                      {p.tipo === "select" && p.opcoes ? (
                                          p.opcoes.length <= 5 ? (
-                                                 <RadioGroup 
+                                             <RadioGroup 
                                                  value={valoresParams[p.nome] || ""}
                                                  onValueChange={(val: string) => setValoresParams({...valoresParams, [p.nome]: val})}
-                                                 className="grid grid-cols-2 gap-2 pt-1"
+                                                 className={`grid gap-2 m-0 p-0 ${p.opcoes.length > 2 ? "grid-cols-3" : "grid-cols-2"}`}
                                              >
                                                 {p.opcoes.map((op, oIdx) => {
                                                     const isSelected = valoresParams[p.nome] === op.value;
                                                     return (
-                                                    <div className="relative" key={oIdx}>
-                                                        <RadioGroupItem value={op.value} id={`${p.nome}-${oIdx}`} className="sr-only" />
+                                                    <div className="relative h-9" key={oIdx}>
+                                                        <RadioGroupItem value={op.value} id={`${p.nome}-${oIdx}`} className="sr-only absolute" />
                                                         <Label 
                                                             htmlFor={`${p.nome}-${oIdx}`} 
-                                                            className={`flex items-center justify-center rounded-md px-2 py-1.5 text-center transition cursor-pointer text-xs font-medium h-full leading-tight ${isSelected ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}
+                                                            className={`flex items-center justify-center rounded-md px-2 py-2 text-center transition cursor-pointer text-xs font-semibold h-9 leading-tight border ${isSelected ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-secondary-foreground border-transparent hover:border-muted-foreground/20"}`}
                                                         >
                                                             {op.label}
                                                         </Label>
@@ -183,7 +180,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                                  value={valoresParams[p.nome] || ""} 
                                                  onValueChange={(val) => setValoresParams({...valoresParams, [p.nome]: val || ""})}
                                              >
-                                                 <SelectTrigger className="h-8 bg-background">
+                                                 <SelectTrigger className="h-9 bg-background">
                                                      <SelectValue placeholder="Selecione" />
                                                  </SelectTrigger>
                                                  <SelectContent>
@@ -196,11 +193,12 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                      ) : (
                                          <Input 
                                             type={p.tipo === "number" ? "number" : "text"} 
+                                            inputMode={p.tipo === "number" ? (p.nome.toLowerCase().includes("idade") ? "numeric" : "decimal") : undefined}
                                             step={p.tipo === "number" ? "any" : undefined}
                                             min={p.tipo === "number" ? "0" : undefined}
                                             value={valoresParams[p.nome] || ""} 
                                             onChange={(e) => setValoresParams({...valoresParams, [p.nome]: e.target.value})} 
-                                            className={`h-8 px-2 text-sm ${p.tipo === "number" ? "text-right w-full" : "w-full"}`}
+                                            className={`h-9 px-3 text-sm ${p.tipo === "number" ? "text-right" : ""}`}
                                          />
                                      )}
                                  </div>
