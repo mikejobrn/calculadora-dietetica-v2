@@ -72,6 +72,7 @@ export default function ProdutosPage() {
     const { data, error } = await supabase
       .from("produtos_alimentares")
       .select("*")
+      .eq("ativo", true)
       .order("tipo")
       .order("nome");
     if (data) setProdutos(data);
@@ -168,7 +169,7 @@ export default function ProdutosPage() {
 
   const handleDeletar = async (id: string) => {
     if (!confirm("Deseja mesmo excluir este produto?")) return;
-    await supabase.from("produtos_alimentares").delete().eq("id", id);
+    await supabase.from("produtos_alimentares").update({ ativo: false }).eq("id", id);
     carregarProdutos();
   };
 
