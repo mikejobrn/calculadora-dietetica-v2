@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
+import { useRef } from "react";
 
 interface Produto {
   id: string;
@@ -53,7 +54,10 @@ export default function ProdutosPage() {
   const [fibra, setFibra] = useState("");
   const [fabricante, setFabricante] = useState("");
   const [salvando, setSalvando] = useState(false);
+  const [analisando, setAnalisando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const supabase = createClient();
 
@@ -69,6 +73,41 @@ export default function ProdutosPage() {
   };
 
   useEffect(() => { carregarProdutos(); }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setAnalisando(true);
+    setError(null);
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64Data = reader.result as string;
+        const base64 = base64Data.split(",")[1];
+
+        const { data, error } = await supabase.functions.invoke("scan-nutrition-label", {
+          body: { imageBase64: base64 },
+        });
+
+        if (error) throw error;
+        if (data?.error) throw new Error(data.error);
+
+        if (data.densidade_calorica != null) setDensidadeCalorica(String(data.densidade_calorica));
+        if (data.proteina != null) setProteina(String(data.proteina));
+        if (data.carboidrato != null) setCarboidrato(String(data.carboidrato));
+        if (data.lipidio != null) setLipidio(String(data.lipidio));
+        if (data.fibra != null) setFibra(String(data.fibra));
+      } catch (err: any) {
+        setError("Erro ao analisar rótulo: " + err.message);
+      } finally {
+        setAnalisando(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const limparForm = () => {
     setNome(""); setTipo("dieta_completa"); setDensidadeCalorica(""); setProteina("");
@@ -146,6 +185,11 @@ export default function ProdutosPage() {
               <DialogTitle>{editando ? "Editar" : "Novo"} Produto</DialogTitle>
             </DialogHeader>
             <div className="space-y-3 pt-2">
+              <Button type="button" variant="secondary" className="w-full font-medium" onClick={() => fileInputRef.current?.click()} disabled={analisando}>
+                {analisando ? "Analisando imagem..." : "📸 Preenchimento Inteligente por Foto (OCR)"}
+              </Button>
+              <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handleImageUpload} />
+              
               <div className="space-y-1">
                 <Label className="text-xs">Nome</Label>
                 <Input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome do produto" />
