@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
@@ -208,9 +209,9 @@ export default function CalculadoraPage() {
           </div>
           <div className="flex gap-2">
             <Button onClick={handleCalcular} className="flex-1">Calcular</Button>
-            <a href="/calculadora/estimar" className="flex-1 inline-flex items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 transition-colors">
+            <Link href="/calculadora/estimar" className="flex-1 inline-flex items-center justify-center rounded-md border border-input bg-background text-sm font-medium hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 transition-colors">
               Estimar
-            </a>
+            </Link>
           </div>
         </CardContent>
       </Card>
