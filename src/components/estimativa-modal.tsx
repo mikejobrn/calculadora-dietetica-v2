@@ -151,9 +151,9 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                          <div className="grid grid-cols-2 gap-x-4 gap-y-6 pt-2">
                              {[...metodoAtual.parametros]
                                .sort((a, b) => (a.tipo === "select" ? -1 : 1))
-                               .map((p, idx) => (
-                                 <div key={idx} className={`space-y-1 ${p.tipo === "select" && p.opcoes && p.opcoes.length > 2 ? "col-span-2" : "col-span-1"}`}>
-                                     <Label className="text-xs font-semibold text-muted-foreground leading-none">{p.label || p.nome}</Label>
+                                                             .map((p, idx) => (
+                                                                 <div key={idx} className={`flex h-full flex-col justify-end gap-1 ${p.tipo === "select" && p.opcoes && p.opcoes.length > 2 ? "col-span-2" : "col-span-1"}`}>
+                                                                         <Label className="text-xs font-semibold text-muted-foreground leading-tight">{p.label || p.nome}</Label>
                                      {p.tipo === "select" && p.opcoes ? (
                                          p.opcoes.length <= 5 ? (
                                              <RadioGroup 
