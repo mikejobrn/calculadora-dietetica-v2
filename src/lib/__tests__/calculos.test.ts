@@ -29,35 +29,30 @@ describe("calcularIMC", () => {
 });
 
 describe("classificarIMC", () => {
-  it("classifica Baixo peso < 18.5", () => {
-    expect(classificarIMC(17)).toBe("Baixo peso");
+  it("classifica Desnutrição < 18.4", () => {
+    expect(classificarIMC(17)).toBe("Desnutrição");
   });
-  it("classifica Eutrofia 18.5-24.9", () => {
+  it("classifica Eutrofia 18.4-24.8", () => {
     expect(classificarIMC(22)).toBe("Eutrofia");
-    expect(classificarIMC(24.9)).toBe("Eutrofia");
+    expect(classificarIMC(24.8)).toBe("Eutrofia");
   });
-  it("classifica Sobrepeso 25-29.9", () => {
+  it("classifica Sobrepeso 24.9-29.8", () => {
     expect(classificarIMC(27)).toBe("Sobrepeso");
   });
-  it("classifica Obesidade grau I 30-34.9", () => {
-    expect(classificarIMC(32)).toBe("Obesidade grau I");
-  });
-  it("classifica Obesidade grau II 35-39.9", () => {
-    expect(classificarIMC(37)).toBe("Obesidade grau II");
-  });
-  it("classifica Obesidade grau III ≥ 40", () => {
-    expect(classificarIMC(42)).toBe("Obesidade grau III");
+  it("classifica Obesidade >= 29.9", () => {
+    expect(classificarIMC(32)).toBe("Obesidade");
+    expect(classificarIMC(42)).toBe("Obesidade");
   });
 });
 
 describe("classificarIMCIdoso (Lipschitz, 1994)", () => {
-  it("classifica Baixo peso < 22", () => {
-    expect(classificarIMCIdoso(20)).toBe("Baixo peso");
+  it("classifica Desnutrição < 22", () => {
+    expect(classificarIMCIdoso(20)).toBe("Desnutrição");
   });
-  it("classifica Eutrofia 22-27", () => {
+  it("classifica Eutrofia 22-26.9", () => {
     expect(classificarIMCIdoso(24)).toBe("Eutrofia");
   });
-  it("classifica Sobrepeso > 27", () => {
+  it("classifica Sobrepeso >= 27", () => {
     expect(classificarIMCIdoso(29)).toBe("Sobrepeso");
   });
 });

@@ -15,20 +15,16 @@ export function calcularIMC(peso: number, altura: number): number {
 }
 
 export type ClassificacaoIMC =
-  | "Baixo peso"
+  | "Desnutrição"
   | "Eutrofia"
   | "Sobrepeso"
-  | "Obesidade grau I"
-  | "Obesidade grau II"
-  | "Obesidade grau III";
+  | "Obesidade";
 
 export function classificarIMC(imc: number): ClassificacaoIMC {
-  if (imc < 18.5) return "Baixo peso";
-  if (imc < 25.0) return "Eutrofia";
-  if (imc < 30.0) return "Sobrepeso";
-  if (imc < 35.0) return "Obesidade grau I";
-  if (imc < 40.0) return "Obesidade grau II";
-  return "Obesidade grau III";
+  if (imc < 18.4) return "Desnutrição";
+  if (imc < 24.9) return "Eutrofia";
+  if (imc < 29.9) return "Sobrepeso";
+  return "Obesidade";
 }
 
 // ==========================================================
@@ -36,13 +32,13 @@ export function classificarIMC(imc: number): ClassificacaoIMC {
 // ==========================================================
 
 export type ClassificacaoIMCIdoso =
-  | "Baixo peso"
+  | "Desnutrição"
   | "Eutrofia"
   | "Sobrepeso";
 
 export function classificarIMCIdoso(imc: number): ClassificacaoIMCIdoso {
-  if (imc < 22) return "Baixo peso";
-  if (imc <= 27) return "Eutrofia";
+  if (imc < 22) return "Desnutrição";
+  if (imc < 27) return "Eutrofia";
   return "Sobrepeso";
 }
 
@@ -117,10 +113,20 @@ export interface ResumoNutricional {
   tempoInfusao: number;    // horas
   biMedia: number;         // ml/h (BI = Volume / Tempo)
   vct: number;             // Valor calórico total (kcal)
-  proteina: number;        // g
+  ptn: number;             // g (proteina da dieta)
+  mp: number;              // g (modulo de proteina)
+  totalProteina: number;   // g
   carboidrato: number;     // g
   lipidio: number;         // g
-  fibra: number;           // g
+  fibras: number;          // g (fibras da dieta)
+  mf: number;              // g (modulo de fibra)
+  totalFibras: number;     // g
+  proteina: number;        // g (alias para totalProteina)
+  fibra: number;           // g (alias para totalFibras)
+  necessidadeCalorica: number; // kcal (selecionada)
+  necessidadeProteica: number; // g (selecionada)
+  necessidadeCaloricaPorPeso: number; // kcal/kg
+  necessidadeProteicaPorPeso: number; // g/kg
   adequacaoVCT: number;    // % (VCT / necessidade × 100)
   adequacaoPTN: number;    // % (PTN / necessidade × 100)
   necessidadeHidrica: number; // ml
@@ -135,15 +141,18 @@ export function calcularResumoNutricional(
   etapas: EtapaDieta[],
   necessidadeCalorica: number,
   necessidadeProteica: number,
-  pesoKg: number
+  pesoKg: number,
+  idadeAnos?: number
 ): ResumoNutricional {
   let volumeTotal = 0;
   let tempoInfusao = 0;
   let vct = 0;
-  let proteina = 0;
+  let ptn = 0;
+  let mp = 0;
   let carboidrato = 0;
   let lipidio = 0;
-  let fibra = 0;
+  let fibras = 0;
+  let mf = 0;
 
   for (const etapa of etapas) {
     const vol = etapa.volumeMl;
@@ -156,7 +165,7 @@ export function calcularResumoNutricional(
       vct += etapa.dieta.densidadeCalorica * vol;
     }
     if (etapa.dieta.proteina) {
-      proteina += etapa.dieta.proteina * litros;
+      ptn += etapa.dieta.proteina * litros;
     }
     if (etapa.dieta.carboidrato) {
       carboidrato += etapa.dieta.carboidrato * litros;
@@ -165,37 +174,53 @@ export function calcularResumoNutricional(
       lipidio += etapa.dieta.lipidio * litros;
     }
     if (etapa.dieta.fibra) {
-      fibra += etapa.dieta.fibra * litros;
+      fibras += etapa.dieta.fibra * litros;
     }
 
     // Módulo de proteína (dose-based)
     if (etapa.moduloProteina && etapa.medidaProteina) {
-      // Simplificação: dose em g de proteína
-      proteina += etapa.medidaProteina;
+      mp += (etapa.moduloProteina.proteina || 0) * etapa.medidaProteina;
     }
 
     // Módulo de fibra (dose-based)
     if (etapa.moduloFibra && etapa.medidaFibra) {
-      fibra += etapa.medidaFibra;
+      mf += (etapa.moduloFibra.fibra || 0) * etapa.medidaFibra;
     }
   }
 
+  const totalProteina = ptn + mp;
+  const totalFibras = fibras + mf;
+
   const biMedia = tempoInfusao > 0 ? Math.round((volumeTotal / tempoInfusao) * 10) / 10 : 0;
   const adequacaoVCT = necessidadeCalorica > 0 ? Math.round((vct / necessidadeCalorica) * 1000) / 10 : 0;
-  const adequacaoPTN = necessidadeProteica > 0 ? Math.round((proteina / necessidadeProteica) * 1000) / 10 : 0;
+  const adequacaoPTN = necessidadeProteica > 0 ? Math.round((totalProteina / necessidadeProteica) * 1000) / 10 : 0;
 
-  // Necessidade hídrica: 30ml/kg (simplificação comum)
-  const necessidadeHidrica = Math.round(pesoKg * 30);
+  const necessidadeCaloricaPorPeso = pesoKg > 0 ? Math.round((necessidadeCalorica / pesoKg) * 10) / 10 : 0;
+  const necessidadeProteicaPorPeso = pesoKg > 0 ? Math.round((necessidadeProteica / pesoKg) * 10) / 10 : 0;
+
+  const idade = typeof idadeAnos === "number" && !Number.isNaN(idadeAnos) ? idadeAnos : null;
+  const fatorHidrico = idade === null ? 30 : idade < 20 ? 40 : idade < 55 ? 35 : idade < 75 ? 30 : 25;
+  const necessidadeHidrica = Math.round(pesoKg * fatorHidrico);
 
   return {
     volumeTotal: Math.round(volumeTotal),
     tempoInfusao: Math.round(tempoInfusao * 10) / 10,
     biMedia,
     vct: Math.round(vct),
-    proteina: Math.round(proteina * 10) / 10,
+    ptn: Math.round(ptn * 10) / 10,
+    mp: Math.round(mp * 10) / 10,
+    totalProteina: Math.round(totalProteina * 10) / 10,
     carboidrato: Math.round(carboidrato * 10) / 10,
     lipidio: Math.round(lipidio * 10) / 10,
-    fibra: Math.round(fibra * 10) / 10,
+    fibras: Math.round(fibras * 10) / 10,
+    mf: Math.round(mf * 10) / 10,
+    totalFibras: Math.round(totalFibras * 10) / 10,
+    proteina: Math.round(totalProteina * 10) / 10,
+    fibra: Math.round(totalFibras * 10) / 10,
+    necessidadeCalorica: Math.round(necessidadeCalorica),
+    necessidadeProteica: Math.round(necessidadeProteica * 10) / 10,
+    necessidadeCaloricaPorPeso,
+    necessidadeProteicaPorPeso,
     adequacaoVCT,
     adequacaoPTN,
     necessidadeHidrica,

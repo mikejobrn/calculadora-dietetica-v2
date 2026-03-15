@@ -171,8 +171,17 @@ export default function CalculadoraPage() {
     if (necessidades) {
       const necCal = usarPesoEstimado ? necessidades.caloricoEstimado : necessidades.caloricoIdeal;
       const necPTN = usarPTNEstimado ? necessidades.proteicoEstimado : necessidades.proteicoIdeal;
-      setResumo(calcularResumoNutricional(novasEtapas, necCal, necPTN, parseFloat(peso)));
+      setResumo(calcularResumoNutricional(novasEtapas, necCal, necPTN, parseFloat(peso), parseInt(idade)));
     }
+
+    setStageHorario("");
+    setStageDuracao("");
+    setStageDietaId("");
+    setStageVolume("");
+    setStageProteinaId("");
+    setStageMedidaProteina("");
+    setStageFibraId("");
+    setStageMedidaFibra("");
 
     focusInputById("stage-horario");
   };
@@ -183,7 +192,7 @@ export default function CalculadoraPage() {
     if (necessidades && novasEtapas.length > 0) {
       const necCal = usarPesoEstimado ? necessidades.caloricoEstimado : necessidades.caloricoIdeal;
       const necPTN = usarPTNEstimado ? necessidades.proteicoEstimado : necessidades.proteicoIdeal;
-      setResumo(calcularResumoNutricional(novasEtapas, necCal, necPTN, parseFloat(peso)));
+      setResumo(calcularResumoNutricional(novasEtapas, necCal, necPTN, parseFloat(peso), parseInt(idade)));
     } else {
       setResumo(null);
     }
@@ -254,11 +263,11 @@ export default function CalculadoraPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label className="text-xs">Nec. calórica (kcal/kg)</Label>
+                <Label className="text-xs">Necessidade calórica por peso:</Label>
                 <Input id="fator-calorico" type="number" min="0" step="1" value={fatorCalorico} onChange={(e) => setFatorCalorico(e.target.value)} inputMode="numeric" />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Nec. proteica (g/kg)</Label>
+                <Label className="text-xs">Necessidade protéica por peso:</Label>
                 <Input id="fator-proteico" type="number" min="0" step="0.1" value={fatorProteico} onChange={(e) => setFatorProteico(e.target.value)} inputMode="decimal" />
               </div>
             </div>
@@ -318,13 +327,14 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Dieta</Label>
-                <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val || "")}>
+                <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val === "empty" ? "" : (val || ""))}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione a dieta">
                       {stageDietaId ? dietasCompletas.find((p) => p.id === stageDietaId)?.nome : null}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="empty" label=""> </SelectItem>
                     {dietasCompletas.map((p) => (
                       <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
@@ -332,14 +342,14 @@ export default function CalculadoraPage() {
                 </Select>
               </div>
               <div className="w-full space-y-1">
-                <Label className="text-xs">Vol (ml)</Label>
+                <Label className="text-xs">Volume (ml)</Label>
                 <Input type="number" min="0" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} className="text-right" inputMode="numeric" />
               </div>
             </div>
 
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs">Mód. Proteína</Label>
+                <Label className="text-xs">Módulo de proteína</Label>
                 <Select value={stageProteinaId} onValueChange={(val) => setStageProteinaId(val || "")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Nenhum">
@@ -359,14 +369,14 @@ export default function CalculadoraPage() {
                 </Select>
               </div>
               <div className="w-full space-y-1">
-                <Label className="text-xs">Qtd (un)</Label>
+                <Label className="text-xs">Medida (un)</Label>
                 <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId || stageProteinaId === "none"} className="text-right" inputMode="decimal" />
               </div>
             </div>
 
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
-                <Label className="text-xs">Mód. Fibra</Label>
+                <Label className="text-xs">Módulo de fibra</Label>
                 <Select value={stageFibraId} onValueChange={(val) => setStageFibraId(val || "")}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Nenhum">
@@ -386,7 +396,7 @@ export default function CalculadoraPage() {
                 </Select>
               </div>
               <div className="w-full space-y-1">
-                <Label className="text-xs">Qtd (un)</Label>
+                <Label className="text-xs">Medida (un)</Label>
                 <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId || stageFibraId === "none"} className="text-right" inputMode="decimal" />
               </div>
             </div>
@@ -406,21 +416,26 @@ export default function CalculadoraPage() {
           </CardHeader>
           <CardContent className="space-y-2">
             {etapas.map((etapa, idx) => (
-              <div key={idx} className="flex items-center justify-between rounded-md border-l-4 border-l-primary bg-secondary/50 px-3 py-2">
-                <div className="text-sm">
-                  <span className="font-mono font-medium">{etapa.horario}</span>
-                  <span className="mx-2 text-muted-foreground">•</span>
-                  <span>{etapa.dieta.nome}</span>
-                  <span className="mx-2 text-muted-foreground">•</span>
-                  <span>{etapa.volumeMl}ml</span>
-                  <span className="mx-2 text-muted-foreground">•</span>
-                  <span className="text-muted-foreground">BI: {calcularBI(etapa.volumeMl, etapa.duracao)} ml/h</span>
+              <div key={idx} className="rounded-md border-l-4 border-l-primary bg-secondary/50 px-3 py-2">
+                <div className="mb-1.5 flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    <span className="font-mono">{etapa.horario}</span> - BI: {calcularBI(etapa.volumeMl, etapa.duracao)} ml/h
+                  </span>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoverEtapa(idx)}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoverEtapa(idx)}>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </Button>
+                <div className="space-y-1 text-sm">
+                  <div>{etapa.dieta.nome} - {etapa.volumeMl} ml</div>
+                  {etapa.moduloProteina && (
+                    <div>{etapa.moduloProteina.nome} - {etapa.medidaProteina || 0} medida</div>
+                  )}
+                  {etapa.moduloFibra && (
+                    <div>{etapa.moduloFibra.nome} - {etapa.medidaFibra || 0} medida</div>
+                  )}
+                </div>
               </div>
             ))}
           </CardContent>
@@ -431,67 +446,45 @@ export default function CalculadoraPage() {
       {resumo && (
         <Card className="border-primary/20">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Resumo Nutricional</CardTitle>
+            <CardTitle className="text-lg">Informações Nutricionais</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid grid-cols-3 gap-2 text-center text-sm">
-              <div className="rounded-md bg-secondary p-2">
-                <p className="text-muted-foreground text-xs">Volume</p>
-                <p className="font-bold">{resumo.volumeTotal} ml</p>
-              </div>
-              <div className="rounded-md bg-secondary p-2">
-                <p className="text-muted-foreground text-xs">Tempo</p>
-                <p className="font-bold">{resumo.tempoInfusao} h</p>
-              </div>
-              <div className="rounded-md bg-secondary p-2">
-                <p className="text-muted-foreground text-xs">BI média</p>
-                <p className="font-bold">{resumo.biMedia} ml/h</p>
-              </div>
+            <div className="rounded-md bg-secondary px-3 py-2 text-sm">
+              <span><strong>Volume:</strong> {resumo.volumeTotal} ml</span>
+              <span className="mx-2" />
+              <span><strong>Tempo:</strong> {resumo.tempoInfusao} h</span>
+              <span className="mx-2" />
+              <span><strong>BI média:</strong> {resumo.biMedia} ml/h</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="flex justify-between rounded-md bg-secondary px-3 py-2">
-                <span className="text-muted-foreground">VCT</span>
-                <span className="font-semibold">{resumo.vct} kcal</span>
+            <div className="space-y-2 text-sm">
+              <div className="rounded-md bg-secondary px-3 py-2">
+                <strong>VCT:</strong> {resumo.vct} <strong className="ml-3">CHO:</strong> {resumo.carboidrato}
               </div>
-              <div className="flex justify-between rounded-md bg-secondary px-3 py-2">
-                <span className="text-muted-foreground">PTN</span>
-                <span className="font-semibold">{resumo.proteina}g</span>
+              <div className="rounded-md bg-secondary px-3 py-2">
+                <strong>PTN:</strong> {resumo.ptn} <strong className="ml-3">MP:</strong> {resumo.mp} <strong className="ml-3">Total de Proteína:</strong> {resumo.totalProteina}
               </div>
-              <div className="flex justify-between rounded-md bg-secondary px-3 py-2">
-                <span className="text-muted-foreground">CHO</span>
-                <span className="font-semibold">{resumo.carboidrato}g</span>
+              <div className="rounded-md bg-secondary px-3 py-2">
+                <strong>LIP:</strong> {resumo.lipidio}
               </div>
-              <div className="flex justify-between rounded-md bg-secondary px-3 py-2">
-                <span className="text-muted-foreground">LIP</span>
-                <span className="font-semibold">{resumo.lipidio}g</span>
+              <div className="rounded-md bg-secondary px-3 py-2">
+                <strong>Fibras:</strong> {resumo.fibras} <strong className="ml-3">MF:</strong> {resumo.mf} <strong className="ml-3">Total Fibras:</strong> {resumo.totalFibras}
               </div>
-              {resumo.fibra > 0 && (
-                <div className="flex justify-between rounded-md bg-secondary px-3 py-2 col-span-2">
-                  <span className="text-muted-foreground">Fibras</span>
-                  <span className="font-semibold">{resumo.fibra}g</span>
-                </div>
-              )}
             </div>
 
             <Separator />
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Adequação VCT</span>
-                <Badge variant={resumo.adequacaoVCT >= 90 && resumo.adequacaoVCT <= 110 ? "default" : "destructive"}>
-                  {resumo.adequacaoVCT}%
-                </Badge>
+              <div className="rounded-md bg-secondary px-3 py-2 text-sm">
+                <p><strong>Necessidade calórica:</strong> {resumo.necessidadeCalorica} kcal ({resumo.necessidadeCaloricaPorPeso})</p>
+                <p><strong>Adequação VCT:</strong> {resumo.adequacaoVCT} %</p>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Adequação PTN</span>
-                <Badge variant={resumo.adequacaoPTN >= 90 && resumo.adequacaoPTN <= 110 ? "default" : "destructive"}>
-                  {resumo.adequacaoPTN}%
-                </Badge>
+              <div className="rounded-md bg-secondary px-3 py-2 text-sm">
+                <p><strong>Necessidade protéica:</strong> {resumo.necessidadeProteica} g ({resumo.necessidadeProteicaPorPeso})</p>
+                <p><strong>Adequação PTN:</strong> {resumo.adequacaoPTN} %</p>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Necessidade hídrica</span>
-                <span className="font-medium">{resumo.necessidadeHidrica} ml</span>
+              <div className="rounded-md bg-secondary px-3 py-2 text-sm">
+                <strong>Necessidade hídrica:</strong> {resumo.necessidadeHidrica} ml
               </div>
             </div>
           </CardContent>
