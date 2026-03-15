@@ -292,22 +292,22 @@ export default function CalculadoraPage() {
             <CardTitle className="text-lg">Adicionar Etapa</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex gap-3">
-              <div className="flex-1 space-y-1">
+            <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
+              <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Horário</Label>
-                <Input type="time" value={stageHorario} onChange={(e) => setStageHorario(e.target.value)} />
+                <Input type="time" value={stageHorario} onChange={(e) => setStageHorario(e.target.value)} className="w-full" />
               </div>
-              <div className="w-24 space-y-1">
+              <div className="w-full space-y-1">
                 <Label className="text-xs">Duração (h)</Label>
                 <Input type="number" min="0" step="0.5" value={stageDuracao} onChange={(e) => setStageDuracao(e.target.value)} className="text-right" inputMode="decimal" />
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <div className="flex-1 space-y-1">
+            <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
+              <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Dieta</Label>
                 <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val || "")}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione a dieta">
                       {stageDietaId ? dietasCompletas.find((p) => p.id === stageDietaId)?.nome : null}
                     </SelectValue>
@@ -319,18 +319,24 @@ export default function CalculadoraPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="w-24 space-y-1">
+              <div className="w-full space-y-1">
                 <Label className="text-xs">Vol (ml)</Label>
                 <Input type="number" min="0" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} className="text-right" inputMode="numeric" />
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <div className="flex-1 space-y-1">
+            <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
+              <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Mód. Proteína</Label>
                 <Select value={stageProteinaId} onValueChange={(val) => setStageProteinaId(val || "")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nenhum" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Nenhum">
+                      {stageProteinaId
+                        ? stageProteinaId === "none"
+                          ? "Nenhum"
+                          : modulosProteina.find((p) => p.id === stageProteinaId)?.nome
+                        : null}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
@@ -340,18 +346,24 @@ export default function CalculadoraPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="w-24 space-y-1">
+              <div className="w-full space-y-1">
                 <Label className="text-xs">Qtd (g)</Label>
                 <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId || stageProteinaId === "none"} className="text-right" inputMode="decimal" />
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <div className="flex-1 space-y-1">
+            <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
+              <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Mód. Fibra</Label>
                 <Select value={stageFibraId} onValueChange={(val) => setStageFibraId(val || "")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Nenhum" />
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Nenhum">
+                      {stageFibraId
+                        ? stageFibraId === "none"
+                          ? "Nenhum"
+                          : modulosFibra.find((p) => p.id === stageFibraId)?.nome
+                        : null}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
@@ -361,7 +373,7 @@ export default function CalculadoraPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="w-24 space-y-1">
+              <div className="w-full space-y-1">
                 <Label className="text-xs">Qtd (g)</Label>
                 <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId || stageFibraId === "none"} className="text-right" inputMode="decimal" />
               </div>
