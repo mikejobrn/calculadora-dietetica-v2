@@ -272,36 +272,47 @@ export default function CalculadoraPage() {
               </div>
             </div>
 
+            <Button onClick={handleCalcularNecessidades} className="w-full">Calcular Necessidades</Button>
+
             {necessidades && (
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <button
-                  onClick={() => setUsarPesoEstimado(true)}
-                  className={`rounded-md px-3 py-2 text-center transition ${usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
-                >
-                  Estimado: {necessidades.caloricoEstimado} kcal
-                </button>
-                <button
-                  onClick={() => setUsarPesoEstimado(false)}
-                  className={`rounded-md px-3 py-2 text-center transition ${!usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
-                >
-                  Ideal: {necessidades.caloricoIdeal} kcal
-                </button>
-                <button
-                  onClick={() => setUsarPTNEstimado(true)}
-                  className={`rounded-md px-3 py-2 text-center transition ${usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
-                >
-                  PTN Est: {necessidades.proteicoEstimado}g
-                </button>
-                <button
-                  onClick={() => setUsarPTNEstimado(false)}
-                  className={`rounded-md px-3 py-2 text-center transition ${!usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
-                >
-                  PTN Ideal: {necessidades.proteicoIdeal}g
-                </button>
+              <div className="space-y-3 text-sm">
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">Necessidade calórica por peso:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setUsarPesoEstimado(true)}
+                      className={`rounded-md px-3 py-2 text-center transition ${usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                    >
+                      Estimado: {necessidades.caloricoEstimado} kcal
+                    </button>
+                    <button
+                      onClick={() => setUsarPesoEstimado(false)}
+                      className={`rounded-md px-3 py-2 text-center transition ${!usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                    >
+                      Ideal: {necessidades.caloricoIdeal} kcal
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">Necessidade proteica por peso:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setUsarPTNEstimado(true)}
+                      className={`rounded-md px-3 py-2 text-center transition ${usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                    >
+                      Estimado: {necessidades.proteicoEstimado}g
+                    </button>
+                    <button
+                      onClick={() => setUsarPTNEstimado(false)}
+                      className={`rounded-md px-3 py-2 text-center transition ${!usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                    >
+                      Ideal: {necessidades.proteicoIdeal}g
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
-
-            <Button onClick={handleCalcularNecessidades} className="w-full">Calcular Necessidades</Button>
           </CardContent>
         </Card>
       )}
@@ -327,14 +338,14 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Dieta</Label>
-                <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val === "empty" ? "" : (val || ""))}>
+                <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val === "none" ? "" : (val || ""))}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione a dieta">
                       {stageDietaId ? dietasCompletas.find((p) => p.id === stageDietaId)?.nome : null}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="empty" label=""> </SelectItem>
+                    <SelectItem value="none" label="Nenhuma">Nenhuma</SelectItem>
                     {dietasCompletas.map((p) => (
                       <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
