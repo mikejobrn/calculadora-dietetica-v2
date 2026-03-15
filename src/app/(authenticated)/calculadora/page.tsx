@@ -66,8 +66,8 @@ export default function CalculadoraPage() {
   const [imc, setImc] = useState<number | null>(null);
   const [classificacao, setClassificacao] = useState<string | null>(null);
   const [pesoIdeal, setPesoIdeal] = useState<number | null>(null);
-  const [fatorCalorico, setFatorCalorico] = useState("30");
-  const [fatorProteico, setFatorProteico] = useState("1.5");
+  const [fatorCalorico, setFatorCalorico] = useState("");
+  const [fatorProteico, setFatorProteico] = useState("");
   const [usarPesoEstimado, setUsarPesoEstimado] = useState(true);
   const [usarPTNEstimado, setUsarPTNEstimado] = useState(true);
   const [necessidades, setNecessidades] = useState<ResultadoNecessidade | null>(null);
@@ -78,13 +78,13 @@ export default function CalculadoraPage() {
   const [resumo, setResumo] = useState<ResumoNutricional | null>(null);
 
   // Stage form
-  const [stageHorario, setStageHorario] = useState("08:00");
-  const [stageDuracao, setStageDuracao] = useState("12");
+  const [stageHorario, setStageHorario] = useState("");
+  const [stageDuracao, setStageDuracao] = useState("");
   const [stageDietaId, setStageDietaId] = useState("");
-  const [stageVolume, setStageVolume] = useState("1000");
-  const [stageProteinaId, setStageProteinaId] = useState("none");
+  const [stageVolume, setStageVolume] = useState("");
+  const [stageProteinaId, setStageProteinaId] = useState("");
   const [stageMedidaProteina, setStageMedidaProteina] = useState("");
-  const [stageFibraId, setStageFibraId] = useState("none");
+  const [stageFibraId, setStageFibraId] = useState("");
   const [stageMedidaFibra, setStageMedidaFibra] = useState("");
 
   // Load products from Supabase
@@ -197,16 +197,16 @@ export default function CalculadoraPage() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="peso" className="text-xs">Peso (kg)</Label>
-              <Input id="peso" type="number" step="0.1" value={peso} onChange={(e) => setPeso(e.target.value)} />
+              <Input id="peso" type="number" min="0" step="0.1" value={peso} onChange={(e) => setPeso(e.target.value)} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="altura" className="text-xs">Altura (m)</Label>
-              <Input id="altura" type="number" step="0.01" value={altura} onChange={(e) => setAltura(e.target.value)} />
+              <Input id="altura" type="number" min="0" step="0.01" value={altura} onChange={(e) => setAltura(e.target.value)} />
             </div>
           </div>
           <div className="space-y-1">
             <Label htmlFor="idade" className="text-xs">Idade (anos)</Label>
-            <Input id="idade" type="number" value={idade} onChange={(e) => setIdade(e.target.value)} className="max-w-[50%]" />
+            <Input id="idade" type="number" min="0" value={idade} onChange={(e) => setIdade(e.target.value)} className="max-w-[50%]" />
           </div>
           <div className="flex gap-2">
             <Button onClick={handleCalcular} className="flex-1">Calcular</Button>
@@ -243,11 +243,11 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-xs">Nec. calórica (kcal/kg)</Label>
-                <Input type="number" step="1" value={fatorCalorico} onChange={(e) => setFatorCalorico(e.target.value)} />
+                <Input type="number" min="0" step="1" value={fatorCalorico} onChange={(e) => setFatorCalorico(e.target.value)} />
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">Nec. proteica (g/kg)</Label>
-                <Input type="number" step="0.1" value={fatorProteico} onChange={(e) => setFatorProteico(e.target.value)} />
+                <Input type="number" min="0" step="0.1" value={fatorProteico} onChange={(e) => setFatorProteico(e.target.value)} />
               </div>
             </div>
 
@@ -292,19 +292,19 @@ export default function CalculadoraPage() {
             <CardTitle className="text-lg">Adicionar Etapa</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
+            <div className="flex gap-3">
+              <div className="flex-1 space-y-1">
                 <Label className="text-xs">Horário</Label>
                 <Input type="time" value={stageHorario} onChange={(e) => setStageHorario(e.target.value)} />
               </div>
-              <div className="space-y-1">
+              <div className="w-24 space-y-1">
                 <Label className="text-xs">Duração (h)</Label>
-                <Input type="number" step="0.5" value={stageDuracao} onChange={(e) => setStageDuracao(e.target.value)} />
+                <Input type="number" min="0" step="0.5" value={stageDuracao} onChange={(e) => setStageDuracao(e.target.value)} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
+            <div className="flex gap-3">
+              <div className="flex-1 space-y-1">
                 <Label className="text-xs">Dieta</Label>
                 <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val || "")}>
                   <SelectTrigger>
@@ -319,55 +319,53 @@ export default function CalculadoraPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Volume (ml)</Label>
-                <Input type="number" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} />
+              <div className="w-24 space-y-1">
+                <Label className="text-xs">Vol (ml)</Label>
+                <Input type="number" min="0" value={stageVolume} onChange={(e) => setStageVolume(e.target.value)} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
+            <div className="flex gap-3">
+              <div className="flex-1 space-y-1">
                 <Label className="text-xs">Mód. Proteína</Label>
                 <Select value={stageProteinaId} onValueChange={(val) => setStageProteinaId(val || "")}>
                   <SelectTrigger>
                     <SelectValue placeholder="Nenhum">
-                      {stageProteinaId === "none" || !stageProteinaId ? null : modulosProteina.find((p) => p.id === stageProteinaId)?.nome}
+                      {!stageProteinaId ? null : modulosProteina.find((p) => p.id === stageProteinaId)?.nome}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
                     {modulosProteina.map((p) => (
                       <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Medida (un)</Label>
-                <Input type="number" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={stageProteinaId === "none"} />
+              <div className="w-24 space-y-1">
+                <Label className="text-xs">Qtd (g)</Label>
+                <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId} />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
+            <div className="flex gap-3">
+              <div className="flex-1 space-y-1">
                 <Label className="text-xs">Mód. Fibra</Label>
                 <Select value={stageFibraId} onValueChange={(val) => setStageFibraId(val || "")}>
                   <SelectTrigger>
                     <SelectValue placeholder="Nenhum">
-                      {stageFibraId === "none" || !stageFibraId ? null : modulosFibra.find((p) => p.id === stageFibraId)?.nome}
+                      {!stageFibraId ? null : modulosFibra.find((p) => p.id === stageFibraId)?.nome}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
                     {modulosFibra.map((p) => (
                       <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Medida (un)</Label>
-                <Input type="number" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={stageFibraId === "none"} />
+              <div className="w-24 space-y-1">
+                <Label className="text-xs">Qtd (g)</Label>
+                <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId} />
               </div>
             </div>
 

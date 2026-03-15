@@ -162,12 +162,12 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                              <RadioGroup 
                                                  value={valoresParams[p.nome] || ""}
                                                  onValueChange={(val: string) => setValoresParams({...valoresParams, [p.nome]: val})}
-                                                 className="flex flex-col space-y-1 mt-1"
+                                                 className="flex flex-col space-y-2 pt-1"
                                              >
                                                 {p.opcoes.map((op, oIdx) => (
-                                                    <div className="flex items-center space-x-2" key={oIdx}>
+                                                    <div className="flex items-center space-x-2 bg-background/50 p-1.5 rounded-md border border-transparent hover:border-border transition-colors" key={oIdx}>
                                                         <RadioGroupItem value={op.value} id={`${p.nome}-${oIdx}`} />
-                                                        <Label htmlFor={`${p.nome}-${oIdx}`} className="font-normal text-sm cursor-pointer">{op.label}</Label>
+                                                        <Label htmlFor={`${p.nome}-${oIdx}`} className="font-normal text-sm cursor-pointer flex-1 leading-none">{op.label}</Label>
                                                     </div>
                                                 ))}
                                              </RadioGroup>
@@ -176,7 +176,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                                  value={valoresParams[p.nome] || ""} 
                                                  onValueChange={(val) => setValoresParams({...valoresParams, [p.nome]: val || ""})}
                                              >
-                                                 <SelectTrigger className="bg-background">
+                                                 <SelectTrigger className="h-8 bg-background">
                                                      <SelectValue placeholder="Selecione">
                                                          {valoresParams[p.nome] ? p.opcoes.find(op => op.value === valoresParams[p.nome])?.label : null}
                                                      </SelectValue>
@@ -192,9 +192,10 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                          <Input 
                                             type={p.tipo === "number" ? "number" : "text"} 
                                             step={p.tipo === "number" ? "any" : undefined}
+                                            min={p.tipo === "number" ? "0" : undefined}
                                             value={valoresParams[p.nome] || ""} 
                                             onChange={(e) => setValoresParams({...valoresParams, [p.nome]: e.target.value})} 
-                                            className="h-9"
+                                            className="h-8 px-2 text-sm"
                                          />
                                      )}
                                  </div>
