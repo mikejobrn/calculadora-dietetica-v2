@@ -347,7 +347,7 @@ export default function CalculadoraPage() {
                 </Select>
               </div>
               <div className="w-full space-y-1">
-                <Label className="text-xs">Qtd (g)</Label>
+                <Label className="text-xs">Qtd (un)</Label>
                 <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId || stageProteinaId === "none"} className="text-right" inputMode="decimal" />
               </div>
             </div>
@@ -374,7 +374,7 @@ export default function CalculadoraPage() {
                 </Select>
               </div>
               <div className="w-full space-y-1">
-                <Label className="text-xs">Qtd (g)</Label>
+                <Label className="text-xs">Qtd (un)</Label>
                 <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId || stageFibraId === "none"} className="text-right" inputMode="decimal" />
               </div>
             </div>

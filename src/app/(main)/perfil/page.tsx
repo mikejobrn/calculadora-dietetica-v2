@@ -1,14 +1,40 @@
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LogoutButton } from "./logout-button";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default async function PerfilPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  if (!user) {
+    return (
+      <div className="space-y-4 pb-4">
+        <h1 className="text-2xl font-bold">Perfil</h1>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Acesso à conta</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Faça login para visualizar seus dados de perfil e acessar as ações da conta.
+            </p>
+            <div className="flex gap-3">
+              <Button asChild className="flex-1">
+                <Link href="/login">Entrar</Link>
+              </Button>
+              <Button asChild variant="outline" className="flex-1">
+                <Link href="/registro">Criar conta</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Get profile from perfis table
   const { data: perfil } = await supabase
