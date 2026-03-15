@@ -14,7 +14,7 @@ interface Metodo {
   id: string;
   nome: string;
   referencia: string | null;
-  parametros: { nome: string; tipo: string; label?: string }[];
+  parametros: { nome: string; tipo: string; label?: string; opcoes?: { label: string; value: string }[] }[];
   formulas: { [key: string]: string };
 }
 
@@ -25,7 +25,7 @@ export default function EstimarPage() {
   const [metodos, setMetodos] = useState<Metodo[]>([]);
   const [loading, setLoading] = useState(true);
   const [metodoSelecionado, setMetodoSelecionado] = useState<string>("");
-  const [valoresParams, setValoresParams] = useState<Record<string, string>>({});
+  const [valoresParams, setValoresParams] = useState<Record<string, string | null>>({});
   const [resultado, setResultado] = useState<Record<string, number> | null>(null);
   const [erroFormula, setErroFormula] = useState<string | null>(null);
 
@@ -61,7 +61,7 @@ export default function EstimarPage() {
     for (const p of metodoAtual.parametros) {
         const strVal = valoresParams[p.nome];
         if (p.tipo === "number") {
-            const val = parseFloat(strVal);
+            const val = parseFloat(strVal || "");
             if (isNaN(val)) {
                 setErroFormula(`Preencha o parâmetro (número): ${p.label || p.nome}`);
                 return;
@@ -151,12 +151,28 @@ export default function EstimarPage() {
                              {metodoAtual.parametros.map((p, idx) => (
                                  <div key={idx} className="space-y-1">
                                      <Label className="text-xs">{p.label || p.nome}</Label>
-                                     <Input 
-                                        type={p.tipo === "number" ? "number" : "text"} 
-                                        step={p.tipo === "number" ? "any" : undefined}
-                                        value={valoresParams[p.nome] || ""} 
-                                        onChange={(e) => setValoresParams({...valoresParams, [p.nome]: e.target.value})} 
-                                     />
+                                     {p.tipo === "select" && p.opcoes ? (
+                                         <Select 
+                                             value={valoresParams[p.nome] || ""} 
+                                             onValueChange={(val) => setValoresParams({...valoresParams, [p.nome]: val})}
+                                         >
+                                             <SelectTrigger className="bg-background">
+                                                 <SelectValue placeholder="Selecione" />
+                                             </SelectTrigger>
+                                             <SelectContent>
+                                                 {p.opcoes.map((op: any, oIdx: number) => (
+                                                     <SelectItem key={oIdx} value={op.value}>{op.label}</SelectItem>
+                                                 ))}
+                                             </SelectContent>
+                                         </Select>
+                                     ) : (
+                                         <Input 
+                                            type={p.tipo === "number" ? "number" : "text"} 
+                                            step={p.tipo === "number" ? "any" : undefined}
+                                            value={valoresParams[p.nome] || ""} 
+                                            onChange={(e) => setValoresParams({...valoresParams, [p.nome]: e.target.value})} 
+                                         />
+                                     )}
                                  </div>
                              ))}
                          </div>
@@ -175,17 +191,25 @@ export default function EstimarPage() {
         </CardContent>
       </Card>
 
-      {resultado && (
-          <Card className="border-primary/20 bg-primary/5">
+      {resultado && metodoAtual && (
+          <Card className="border-primary/20 bg-primary/5 mt-4">
               <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Resultado</CardTitle>
               </CardHeader>
               <CardContent>
                   <div className="space-y-2">
                       {Object.entries(resultado).map(([chave, valor]) => (
-                          <div key={chave} className="flex justify-between items-center bg-background rounded-md px-3 py-2 border">
+                          <div key={chave} className="flex justify-between items-center bg-background rounded-md px-3 py-2 border shadow-sm">
                               <span className="text-sm font-medium capitalize">{chave}</span>
                               <span className="font-bold text-primary">{valor}</span>
+                          </div>
+                      ))}
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-primary/10 space-y-2">
+                      <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Fórmula Utilizada</p>
+                      {Object.entries(metodoAtual.formulas).map(([chave, expressao]) => (
+                          <div key={chave} className="text-xs font-mono bg-background p-2 rounded border border-primary/10 overflow-x-auto text-muted-foreground">
+                              <span className="font-semibold text-primary/80 capitalize">{chave}:</span> {String(expressao)}
                           </div>
                       ))}
                   </div>
