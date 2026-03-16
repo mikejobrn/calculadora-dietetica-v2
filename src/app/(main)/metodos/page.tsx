@@ -54,7 +54,7 @@ export default function MetodosPage() {
   useEffect(() => { carregarDados(); }, []);
 
   const limparForm = () => {
-    setNome(""); setReferencia(""); setParametrosStr('[\n  {"nome": "peso", "tipo": "number"}\n]');
+    setNome(""); setReferencia(""); setParametrosStr('[\n  {\n    "nome": "peso",\n    "tipo": "number",\n    "label": "Peso (kg)"\n  },\n  {\n    "nome": "altura",\n    "tipo": "number",\n    "label": "Altura (cm)"\n  },\n  {\n    "nome": "sexo",\n    "tipo": "select",\n    "label": "Sexo",\n    "opcoes": [\n      {\n        "label": "Masculino",\n        "value": "masculino"\n      },\n      {\n        "label": "Feminino",\n        "value": "feminino"\n      }\n    ]\n  }\n]');
     setFormulasStr('{\n  "peso_estimado": "peso * 1",\n  "altura_estimada": "altura * 1"\n}');
     setError(null); setEditando(null);
   };
