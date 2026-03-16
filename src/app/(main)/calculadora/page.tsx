@@ -23,6 +23,7 @@ import {
   type ResumoNutricional,
 } from "@/lib/calculos";
 import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/toast";
 
 // ==========================================================
 // Types
@@ -64,6 +65,8 @@ function formatZeroDecimal(value: number): string {
 // ==========================================================
 
 export default function CalculadoraPage() {
+  const { toast } = useToast();
+
   // Patient data
   const [peso, setPeso] = useState("");
   const [altura, setAltura] = useState("");
@@ -113,13 +116,14 @@ export default function CalculadoraPage() {
           .select("id, nome, tipo, densidade_calorica, proteina, carboidrato, lipidio, fibra")
           .order("tipo")
           .order("nome");
-        if (error) console.error("Erro ao carregar produtos:", error);
+        if (error) toast(`Erro ao carregar produtos: ${error.message}`);
         if (data) setProdutos(data);
       } catch (err) {
-        console.error("Fetch produtos falhou:", err);
+        toast(`Falha de conexão ao carregar produtos: ${err instanceof Error ? err.message : err}`);
       }
     };
     carregar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculate IMC

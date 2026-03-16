@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/toast";
 
 interface Metodo {
   id: string;
@@ -18,6 +19,7 @@ interface Metodo {
 }
 
 export default function MetodosPage() {
+  const { toast } = useToast();
   const [metodos, setMetodos] = useState<Metodo[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState("");
@@ -48,10 +50,10 @@ export default function MetodosPage() {
         .select("*")
         .eq("ativo", true)
         .order("nome");
-      if (error) console.error("Erro ao carregar métodos:", error);
+      if (error) toast(`Erro ao carregar métodos: ${error.message}`);
       if (data) setMetodos(data);
     } catch (err) {
-      console.error("Fetch métodos falhou:", err);
+      toast(`Falha de conexão ao carregar métodos: ${err instanceof Error ? err.message : err}`);
     } finally {
       setLoading(false);
     }

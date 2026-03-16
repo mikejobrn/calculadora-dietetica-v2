@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/toast";
 
 interface Metodo {
   id: string;
@@ -23,6 +24,7 @@ interface EstimativaModalProps {
 }
 
 export function EstimativaModal({ onApply }: EstimativaModalProps) {
+  const { toast } = useToast();
   const supabase = createClient();
   const [open, setOpen] = useState(false);
   const [metodos, setMetodos] = useState<Metodo[]>([]);
@@ -39,7 +41,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
       setLoading(true);
       try {
         const { data, error } = await supabase.from("metodos_estimativa").select("*").eq("ativo", true).order("nome");
-        if (error) console.error("Erro ao carregar métodos:", error);
+        if (error) toast(`Erro ao carregar métodos: ${error.message}`);
         if (data) {
           setMetodos(data);
           if (data.length > 0 && !metodoSelecionado) {
@@ -47,7 +49,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
           }
         }
       } catch (err) {
-        console.error("Fetch métodos falhou:", err);
+        toast(`Falha de conexão ao carregar métodos: ${err instanceof Error ? err.message : err}`);
       } finally {
         setLoading(false);
       }

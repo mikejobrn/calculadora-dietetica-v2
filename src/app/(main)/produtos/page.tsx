@@ -10,6 +10,7 @@ import { NativeSelect } from "@/components/ui/native-select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/toast";
 import { useRef } from "react";
 
 interface Produto {
@@ -37,6 +38,7 @@ const tipoBadgeColor: Record<string, string> = {
 };
 
 export default function ProdutosPage() {
+  const { toast } = useToast();
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [filtroTipo, setFiltroTipo] = useState("todos");
   const [busca, setBusca] = useState("");
@@ -76,10 +78,10 @@ export default function ProdutosPage() {
         .eq("ativo", true)
         .order("tipo")
         .order("nome");
-      if (error) console.error("Erro ao carregar produtos:", error);
+      if (error) toast(`Erro ao carregar produtos: ${error.message}`);
       if (data) setProdutos(data);
     } catch (err) {
-      console.error("Fetch produtos falhou:", err);
+      toast(`Falha de conexão ao carregar produtos: ${err instanceof Error ? err.message : err}`);
     } finally {
       setLoading(false);
     }
