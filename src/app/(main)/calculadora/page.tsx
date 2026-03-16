@@ -22,6 +22,7 @@ import {
   type ResultadoNecessidade,
   type ResumoNutricional,
 } from "@/lib/calculos";
+import { getErrorMessage, withTimeout } from "@/lib/async";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toast";
 
@@ -111,15 +112,19 @@ export default function CalculadoraPage() {
     const carregar = async () => {
       try {
         const supabase = createClient();
-        const { data, error } = await supabase
-          .from("produtos_alimentares")
-          .select("id, nome, tipo, densidade_calorica, proteina, carboidrato, lipidio, fibra")
-          .order("tipo")
-          .order("nome");
+        const { data, error } = await withTimeout(
+          supabase
+            .from("produtos_alimentares")
+            .select("id, nome, tipo, densidade_calorica, proteina, carboidrato, lipidio, fibra")
+            .order("tipo")
+            .order("nome"),
+          12000,
+          "Carregamento dos produtos"
+        );
         if (error) toast(`Erro ao carregar produtos: ${error.message}`);
         if (data) setProdutos(data);
       } catch (err) {
-        toast(`Falha de conexão ao carregar produtos: ${err instanceof Error ? err.message : err}`);
+        toast(`Falha ao carregar produtos: ${getErrorMessage(err)}`);
       }
     };
     carregar();

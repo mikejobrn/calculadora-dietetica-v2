@@ -41,11 +41,11 @@ export function Toaster({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext value={{ toast }}>
       {children}
-      <div className="fixed bottom-20 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4">
+      <div className="fixed top-4 left-0 right-0 z-[100] flex flex-col items-center gap-2 pointer-events-none px-4">
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`pointer-events-auto w-full max-w-sm rounded-lg border px-4 py-3 shadow-lg flex items-start gap-3 animate-in slide-in-from-bottom-4 fade-in duration-300 ${
+            className={`pointer-events-auto w-full max-w-sm rounded-lg border px-4 py-3 shadow-lg flex items-start gap-3 animate-in slide-in-from-top-4 fade-in duration-300 ${
               t.variant === "error"
                 ? "bg-destructive/10 border-destructive/30 text-destructive"
                 : "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400"

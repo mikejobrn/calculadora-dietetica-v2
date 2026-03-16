@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
+import { getErrorMessage, withTimeout } from "@/lib/async";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toast";
 
@@ -40,7 +41,11 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
       if (!open) return;
       setLoading(true);
       try {
-        const { data, error } = await supabase.from("metodos_estimativa").select("*").eq("ativo", true).order("nome");
+                const { data, error } = await withTimeout(
+                    supabase.from("metodos_estimativa").select("*").eq("ativo", true).order("nome"),
+                    12000,
+                    "Carregamento dos métodos"
+                );
         if (error) toast(`Erro ao carregar métodos: ${error.message}`);
         if (data) {
           setMetodos(data);
@@ -48,8 +53,8 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
             setMetodoSelecionado(data[0].id);
           }
         }
-      } catch (err) {
-        toast(`Falha de conexão ao carregar métodos: ${err instanceof Error ? err.message : err}`);
+            } catch (err) {
+                toast(`Falha ao carregar métodos: ${getErrorMessage(err)}`);
       } finally {
         setLoading(false);
       }

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { getErrorMessage, withTimeout } from "@/lib/async";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toast";
 
@@ -40,20 +41,37 @@ export default function MetodosPage() {
   const carregarDados = async () => {
     setLoading(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        const { data: perfil } = await supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single();
-        if (perfil) setUserPapel(perfil.papel);
+      try {
+        const { data: userData } = await withTimeout(supabase.auth.getUser(), 8000, "Leitura da sessão");
+        if (userData?.user) {
+          const { data: perfil, error: perfilError } = await withTimeout(
+            supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single(),
+            8000,
+            "Leitura do perfil"
+          );
+          if (perfilError) {
+            toast(`Erro ao carregar perfil: ${perfilError.message}`);
+          } else if (perfil) {
+            setUserPapel(perfil.papel);
+          }
+        }
+      } catch (err) {
+        toast(`Falha ao validar sessão: ${getErrorMessage(err)}`);
       }
-      const { data, error } = await supabase
-        .from("metodos_estimativa")
-        .select("*")
-        .eq("ativo", true)
-        .order("nome");
+
+      const { data, error } = await withTimeout(
+        supabase
+          .from("metodos_estimativa")
+          .select("*")
+          .eq("ativo", true)
+          .order("nome"),
+        12000,
+        "Carregamento dos métodos"
+      );
       if (error) toast(`Erro ao carregar métodos: ${error.message}`);
       if (data) setMetodos(data);
     } catch (err) {
-      toast(`Falha de conexão ao carregar métodos: ${err instanceof Error ? err.message : err}`);
+      toast(`Falha ao carregar métodos: ${getErrorMessage(err)}`);
     } finally {
       setLoading(false);
     }

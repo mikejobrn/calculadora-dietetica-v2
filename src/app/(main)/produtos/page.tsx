@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { getErrorMessage, withTimeout } from "@/lib/async";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toast";
 import { useRef } from "react";
@@ -67,21 +68,38 @@ export default function ProdutosPage() {
   const carregarProdutos = async () => {
     setLoading(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        const { data: perfil } = await supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single();
-        if (perfil) setUserPapel(perfil.papel);
+      try {
+        const { data: userData } = await withTimeout(supabase.auth.getUser(), 8000, "Leitura da sessão");
+        if (userData?.user) {
+          const { data: perfil, error: perfilError } = await withTimeout(
+            supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single(),
+            8000,
+            "Leitura do perfil"
+          );
+          if (perfilError) {
+            toast(`Erro ao carregar perfil: ${perfilError.message}`);
+          } else if (perfil) {
+            setUserPapel(perfil.papel);
+          }
+        }
+      } catch (err) {
+        toast(`Falha ao validar sessão: ${getErrorMessage(err)}`);
       }
-      const { data, error } = await supabase
-        .from("produtos_alimentares")
-        .select("*")
-        .eq("ativo", true)
-        .order("tipo")
-        .order("nome");
+
+      const { data, error } = await withTimeout(
+        supabase
+          .from("produtos_alimentares")
+          .select("*")
+          .eq("ativo", true)
+          .order("tipo")
+          .order("nome"),
+        12000,
+        "Carregamento dos produtos"
+      );
       if (error) toast(`Erro ao carregar produtos: ${error.message}`);
       if (data) setProdutos(data);
     } catch (err) {
-      toast(`Falha de conexão ao carregar produtos: ${err instanceof Error ? err.message : err}`);
+      toast(`Falha ao carregar produtos: ${getErrorMessage(err)}`);
     } finally {
       setLoading(false);
     }
