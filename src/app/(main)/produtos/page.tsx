@@ -64,19 +64,25 @@ export default function ProdutosPage() {
 
   const carregarProdutos = async () => {
     setLoading(true);
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user) {
-      const { data: perfil } = await supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single();
-      if (perfil) setUserPapel(perfil.papel);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        const { data: perfil } = await supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single();
+        if (perfil) setUserPapel(perfil.papel);
+      }
+      const { data, error } = await supabase
+        .from("produtos_alimentares")
+        .select("*")
+        .eq("ativo", true)
+        .order("tipo")
+        .order("nome");
+      if (error) console.error("Erro ao carregar produtos:", error);
+      if (data) setProdutos(data);
+    } catch (err) {
+      console.error("Fetch produtos falhou:", err);
+    } finally {
+      setLoading(false);
     }
-    const { data, error } = await supabase
-      .from("produtos_alimentares")
-      .select("*")
-      .eq("ativo", true)
-      .order("tipo")
-      .order("nome");
-    if (data) setProdutos(data);
-    setLoading(false);
   };
 
   useEffect(() => { carregarProdutos(); }, []);

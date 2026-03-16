@@ -105,15 +105,21 @@ export default function CalculadoraPage() {
 
   // Load products from Supabase
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("produtos_alimentares")
-      .select("id, nome, tipo, densidade_calorica, proteina, carboidrato, lipidio, fibra")
-      .order("tipo")
-      .order("nome")
-      .then(({ data }) => {
+    const carregar = async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("produtos_alimentares")
+          .select("id, nome, tipo, densidade_calorica, proteina, carboidrato, lipidio, fibra")
+          .order("tipo")
+          .order("nome");
+        if (error) console.error("Erro ao carregar produtos:", error);
         if (data) setProdutos(data);
-      });
+      } catch (err) {
+        console.error("Fetch produtos falhou:", err);
+      }
+    };
+    carregar();
   }, []);
 
   // Calculate IMC

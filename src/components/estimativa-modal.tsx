@@ -37,14 +37,20 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
     const carregarMetodos = async () => {
       if (!open) return;
       setLoading(true);
-      const { data } = await supabase.from("metodos_estimativa").select("*").eq("ativo", true).order("nome");
-      if (data) {
-        setMetodos(data);
-        if (data.length > 0 && !metodoSelecionado) {
-          setMetodoSelecionado(data[0].id);
+      try {
+        const { data, error } = await supabase.from("metodos_estimativa").select("*").eq("ativo", true).order("nome");
+        if (error) console.error("Erro ao carregar métodos:", error);
+        if (data) {
+          setMetodos(data);
+          if (data.length > 0 && !metodoSelecionado) {
+            setMetodoSelecionado(data[0].id);
+          }
         }
+      } catch (err) {
+        console.error("Fetch métodos falhou:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     carregarMetodos();
   }, [open, metodoSelecionado, supabase]);

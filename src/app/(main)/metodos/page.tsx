@@ -37,18 +37,24 @@ export default function MetodosPage() {
 
   const carregarDados = async () => {
     setLoading(true);
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user) {
-      const { data: perfil } = await supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single();
-      if (perfil) setUserPapel(perfil.papel);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        const { data: perfil } = await supabase.from("perfis").select("papel").eq("auth_id", userData.user.id).single();
+        if (perfil) setUserPapel(perfil.papel);
+      }
+      const { data, error } = await supabase
+        .from("metodos_estimativa")
+        .select("*")
+        .eq("ativo", true)
+        .order("nome");
+      if (error) console.error("Erro ao carregar métodos:", error);
+      if (data) setMetodos(data);
+    } catch (err) {
+      console.error("Fetch métodos falhou:", err);
+    } finally {
+      setLoading(false);
     }
-    const { data } = await supabase
-      .from("metodos_estimativa")
-      .select("*")
-      .eq("ativo", true)
-      .order("nome");
-    if (data) setMetodos(data);
-    setLoading(false);
   };
 
   useEffect(() => { carregarDados(); }, []);
