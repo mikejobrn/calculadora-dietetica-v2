@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Separator } from "@/components/ui/separator";
 import { EstimativaModal } from "@/components/estimativa-modal";
 import {
@@ -156,7 +156,7 @@ export default function CalculadoraPage() {
       volumeMl: parseFloat(stageVolume),
     };
 
-    if (stageProteinaId !== "none") {
+    if (stageProteinaId) {
       const mod = produtos.find((p) => p.id === stageProteinaId);
       if (mod) {
         novaEtapa.moduloProteina = produtoToDieta(mod);
@@ -164,7 +164,7 @@ export default function CalculadoraPage() {
       }
     }
 
-    if (stageFibraId !== "none") {
+    if (stageFibraId) {
       const mod = produtos.find((p) => p.id === stageFibraId);
       if (mod) {
         novaEtapa.moduloFibra = produtoToDieta(mod);
@@ -290,13 +290,13 @@ export default function CalculadoraPage() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setUsarPesoEstimado(true)}
-                      className={`rounded-md px-3 py-2 text-center transition ${usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                      className={`rounded-md px-3 py-3 text-center transition ${usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
                     >
                       Estimado: {necessidades.caloricoEstimado} kcal
                     </button>
                     <button
                       onClick={() => setUsarPesoEstimado(false)}
-                      className={`rounded-md px-3 py-2 text-center transition ${!usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                      className={`rounded-md px-3 py-3 text-center transition ${!usarPesoEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
                     >
                       Ideal: {necessidades.caloricoIdeal} kcal
                     </button>
@@ -308,13 +308,13 @@ export default function CalculadoraPage() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setUsarPTNEstimado(true)}
-                      className={`rounded-md px-3 py-2 text-center transition ${usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                      className={`rounded-md px-3 py-3 text-center transition ${usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
                     >
                       Estimado: {necessidades.proteicoEstimado}g
                     </button>
                     <button
                       onClick={() => setUsarPTNEstimado(false)}
-                      className={`rounded-md px-3 py-2 text-center transition ${!usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
+                      className={`rounded-md px-3 py-3 text-center transition ${!usarPTNEstimado ? "bg-primary text-primary-foreground" : "bg-secondary"}`}
                     >
                       Ideal: {necessidades.proteicoIdeal}g
                     </button>
@@ -347,19 +347,12 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Dieta</Label>
-                <Select value={stageDietaId} onValueChange={(val) => setStageDietaId(val === "none" ? "" : (val || ""))}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione a dieta">
-                      {stageDietaId ? dietasCompletas.find((p) => p.id === stageDietaId)?.nome : null}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none" label="Nenhuma">Nenhuma</SelectItem>
-                    {dietasCompletas.map((p) => (
-                      <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect value={stageDietaId} onChange={(e) => setStageDietaId(e.target.value)}>
+                  <option value="">Selecione a dieta</option>
+                  {dietasCompletas.map((p) => (
+                    <option key={p.id} value={p.id}>{p.nome}</option>
+                  ))}
+                </NativeSelect>
               </div>
               <div className="w-full space-y-1">
                 <Label className="text-xs">Volume (ml)</Label>
@@ -370,54 +363,32 @@ export default function CalculadoraPage() {
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Módulo de proteína</Label>
-                <Select value={stageProteinaId} onValueChange={(val) => setStageProteinaId(val || "")}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Nenhum">
-                      {stageProteinaId
-                        ? stageProteinaId === "none"
-                          ? "Nenhum"
-                          : modulosProteina.find((p) => p.id === stageProteinaId)?.nome
-                        : null}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
-                    {modulosProteina.map((p) => (
-                      <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect value={stageProteinaId} onChange={(e) => setStageProteinaId(e.target.value)}>
+                  <option value="">Nenhum</option>
+                  {modulosProteina.map((p) => (
+                    <option key={p.id} value={p.id}>{p.nome}</option>
+                  ))}
+                </NativeSelect>
               </div>
               <div className="w-full space-y-1">
                 <Label className="text-xs">Medida (un)</Label>
-                <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId || stageProteinaId === "none"} className="text-right" inputMode="decimal" />
+                <Input type="number" min="0" value={stageMedidaProteina} onChange={(e) => setStageMedidaProteina(e.target.value)} disabled={!stageProteinaId} className="text-right" inputMode="decimal" />
               </div>
             </div>
 
             <div className="grid grid-cols-[minmax(0,1fr)_7rem] gap-3">
               <div className="min-w-0 space-y-1">
                 <Label className="text-xs">Módulo de fibra</Label>
-                <Select value={stageFibraId} onValueChange={(val) => setStageFibraId(val || "")}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Nenhum">
-                      {stageFibraId
-                        ? stageFibraId === "none"
-                          ? "Nenhum"
-                          : modulosFibra.find((p) => p.id === stageFibraId)?.nome
-                        : null}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none" label="Nenhum">Nenhum</SelectItem>
-                    {modulosFibra.map((p) => (
-                      <SelectItem key={p.id} value={p.id} label={p.nome}>{p.nome}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NativeSelect value={stageFibraId} onChange={(e) => setStageFibraId(e.target.value)}>
+                  <option value="">Nenhum</option>
+                  {modulosFibra.map((p) => (
+                    <option key={p.id} value={p.id}>{p.nome}</option>
+                  ))}
+                </NativeSelect>
               </div>
               <div className="w-full space-y-1">
                 <Label className="text-xs">Medida (un)</Label>
-                <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId || stageFibraId === "none"} className="text-right" inputMode="decimal" />
+                <Input type="number" min="0" value={stageMedidaFibra} onChange={(e) => setStageMedidaFibra(e.target.value)} disabled={!stageFibraId} className="text-right" inputMode="decimal" />
               </div>
             </div>
 

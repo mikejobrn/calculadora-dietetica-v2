@@ -120,4 +120,15 @@
     @apply bg-background text-foreground;
     font-family: var(--font-sans), system-ui, sans-serif;
   }
+
+  /* Normalize time/date inputs on mobile to match other inputs */
+  input[type="time"],
+  input[type="date"] {
+    min-height: 0;
+    line-height: normal;
+  }
+
+  input[type="time"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
 }

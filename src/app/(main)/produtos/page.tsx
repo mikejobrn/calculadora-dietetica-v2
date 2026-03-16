@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/client";
@@ -210,18 +210,11 @@ export default function ProdutosPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label className="text-xs">Tipo</Label>
-                  <Select value={tipo} onValueChange={(val) => setTipo(val || "dieta_completa")} disabled={userPapel !== "admin"}>
-                    <SelectTrigger>
-                      <SelectValue>
-                        {tipo === "dieta_completa" ? "Dieta Completa" : tipo === "modulo_proteina" ? "Mód. Proteína" : tipo === "modulo_fibra" ? "Mód. Fibra" : "Dieta Completa"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dieta_completa" label="Dieta Completa">Dieta Completa</SelectItem>
-                      <SelectItem value="modulo_proteina" label="Mód. Proteína">Mód. Proteína</SelectItem>
-                      <SelectItem value="modulo_fibra" label="Mód. Fibra">Mód. Fibra</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <NativeSelect value={tipo} onChange={(e) => setTipo(e.target.value)} disabled={userPapel !== "admin"}>
+                    <option value="dieta_completa">Dieta Completa</option>
+                    <option value="modulo_proteina">Mód. Proteína</option>
+                    <option value="modulo_fibra">Mód. Fibra</option>
+                  </NativeSelect>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Fabricante</Label>
@@ -268,19 +261,12 @@ export default function ProdutosPage() {
       {/* Filters */}
       <div className="flex gap-2">
         <Input placeholder="Buscar..." value={busca} onChange={(e) => setBusca(e.target.value)} className="flex-1" />
-        <Select value={filtroTipo} onValueChange={(val) => setFiltroTipo(val || "todos")}>
-          <SelectTrigger className="w-[140px]">
-            <SelectValue>
-              {filtroTipo === "todos" ? "Todos" : filtroTipo === "dieta_completa" ? "Dietas" : filtroTipo === "modulo_proteina" ? "Proteínas" : filtroTipo === "modulo_fibra" ? "Fibras" : "Todos"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos" label="Todos">Todos</SelectItem>
-            <SelectItem value="dieta_completa" label="Dietas">Dietas</SelectItem>
-            <SelectItem value="modulo_proteina" label="Proteínas">Proteínas</SelectItem>
-            <SelectItem value="modulo_fibra" label="Fibras">Fibras</SelectItem>
-          </SelectContent>
-        </Select>
+        <NativeSelect value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)} className="w-[140px]">
+          <option value="todos">Todos</option>
+          <option value="dieta_completa">Dietas</option>
+          <option value="modulo_proteina">Proteínas</option>
+          <option value="modulo_fibra">Fibras</option>
+        </NativeSelect>
       </div>
 
       {/* Product List */}

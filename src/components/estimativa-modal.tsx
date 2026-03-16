@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -136,24 +136,18 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
              <p className="text-sm text-muted-foreground text-center py-4">Nenhum método de estimativa cadastrado.</p>
           ) : (
              <div className="space-y-4">
-                 <Select value={metodoSelecionado} onValueChange={(val) => {
-                     setMetodoSelecionado(val || "");
+                 <NativeSelect value={metodoSelecionado} onChange={(e) => {
+                     setMetodoSelecionado(e.target.value);
                      setValoresParams({});
                      setResultado(null);
                      setEscopoUtilizado(null);
                      setErroFormula(null);
                  }}>
-                    <SelectTrigger>
-                        <SelectValue placeholder="Selecione o método">
-                           {metodoSelecionado ? metodos.find(m => m.id === metodoSelecionado)?.nome : null}
-                        </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                        {metodos.map(m => (
-                            <SelectItem key={m.id} value={m.id} label={m.nome}>{m.nome}</SelectItem>
-                        ))}
-                    </SelectContent>
-                 </Select>
+                    <option value="">Selecione o método</option>
+                    {metodos.map(m => (
+                        <option key={m.id} value={m.id}>{m.nome}</option>
+                    ))}
+                 </NativeSelect>
 
                  {metodoAtual && (
                      <div className="space-y-3 pt-2">
@@ -191,19 +185,15 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                                 )})}
                                              </RadioGroup>
                                          ) : (
-                                             <Select 
+                                             <NativeSelect 
                                                  value={valoresParams[p.nome] || ""} 
-                                                 onValueChange={(val) => setValoresParams({...valoresParams, [p.nome]: val || ""})}
+                                                 onChange={(e) => setValoresParams({...valoresParams, [p.nome]: e.target.value})}
                                              >
-                                                 <SelectTrigger className="h-9 bg-background">
-                                                     <SelectValue placeholder="Selecione" />
-                                                 </SelectTrigger>
-                                                 <SelectContent>
-                                                     {p.opcoes.map((op: any, oIdx: number) => (
-                                                         <SelectItem key={oIdx} value={op.value} label={op.label}>{op.label}</SelectItem>
-                                                     ))}
-                                                 </SelectContent>
-                                             </Select>
+                                                 <option value="">Selecione</option>
+                                                 {p.opcoes.map((op: any, oIdx: number) => (
+                                                     <option key={oIdx} value={op.value}>{op.label}</option>
+                                                 ))}
+                                             </NativeSelect>
                                          )
                                      ) : (
                                          <Input 
