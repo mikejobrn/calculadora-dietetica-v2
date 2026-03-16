@@ -19,7 +19,7 @@ interface Metodo {
 }
 
 interface EstimativaModalProps {
-  onApply: (peso?: number, altura?: number) => void;
+    onApply: (peso?: number, altura?: number, idade?: number) => void;
 }
 
 export function EstimativaModal({ onApply }: EstimativaModalProps) {
@@ -30,6 +30,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
   const [metodoSelecionado, setMetodoSelecionado] = useState<string>("");
   const [valoresParams, setValoresParams] = useState<Record<string, string | null>>({});
   const [resultado, setResultado] = useState<Record<string, number> | null>(null);
+    const [escopoUtilizado, setEscopoUtilizado] = useState<Record<string, any> | null>(null);
   const [erroFormula, setErroFormula] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
     if (!metodoAtual) return;
     setErroFormula(null);
     setResultado(null);
+    setEscopoUtilizado(null);
 
     const escopo: Record<string, any> = {};
     for (const p of metodoAtual.parametros) {
@@ -86,8 +88,11 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
              if (isNaN(valorCalculado) || !isFinite(valorCalculado)) {
                  throw new Error(`Resultado inválido para ${chave}`);
              }
-             res[chave] = Number(valorCalculado.toFixed(2));
+             const isAltura = chave.toLowerCase().includes("altura");
+             const valorNormalizado = isAltura ? valorCalculado / 100 : valorCalculado;
+             res[chave] = Number(valorNormalizado.toFixed(2));
         }
+        setEscopoUtilizado(escopo);
         setResultado(res);
     } catch (e: any) {
         setErroFormula(`Erro ao interpretar fórmula: ${e.message}`);
@@ -98,11 +103,20 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
     if (!resultado) return;
     const pesoKey = Object.keys(resultado).find(k => k.toLowerCase().includes("peso"));
     const altKey = Object.keys(resultado).find(k => k.toLowerCase().includes("altura"));
+        const idadeParamKey = escopoUtilizado
+            ? Object.keys(escopoUtilizado).find(k => k.toLowerCase().includes("idade"))
+            : undefined;
+        const idadeParam = idadeParamKey ? Number(escopoUtilizado?.[idadeParamKey]) : undefined;
     
-    onApply(pesoKey ? resultado[pesoKey] : undefined, altKey ? resultado[altKey] : undefined);
+        onApply(
+            pesoKey ? resultado[pesoKey] : undefined,
+            altKey ? resultado[altKey] : undefined,
+            idadeParam !== undefined && !isNaN(idadeParam) ? idadeParam : undefined
+        );
     setOpen(false);
     setResultado(null);
     setValoresParams({});
+        setEscopoUtilizado(null);
     setErroFormula(null);
   };
 
@@ -126,6 +140,7 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                      setMetodoSelecionado(val || "");
                      setValoresParams({});
                      setResultado(null);
+                     setEscopoUtilizado(null);
                      setErroFormula(null);
                  }}>
                     <SelectTrigger>
@@ -226,6 +241,10 @@ export function EstimativaModal({ onApply }: EstimativaModalProps) {
                                          ))}
                                      </div>
                                  </div>
+
+                                 <Button variant="secondary" className="w-full" onClick={handleCalcular}>
+                                     Recalcular
+                                 </Button>
                                  
                                  <Button className="w-full" onClick={handleAppyResult}>
                                      Usar Valores

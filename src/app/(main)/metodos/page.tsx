@@ -55,7 +55,7 @@ export default function MetodosPage() {
 
   const limparForm = () => {
     setNome(""); setReferencia(""); setParametrosStr('[\n  {"nome": "peso", "tipo": "number"}\n]');
-    setFormulasStr('{\n  "calorias": "peso * 25",\n  "proteina": "peso * 1.5"\n}');
+    setFormulasStr('{\n  "peso_estimado": "peso * 1",\n  "altura_estimada": "altura * 1"\n}');
     setError(null); setEditando(null);
   };
 

@@ -231,9 +231,10 @@ export default function CalculadoraPage() {
           </div>
           <div className="flex gap-2">
             <Button onClick={handleCalcular} className="flex-1">Calcular</Button>
-            <EstimativaModal onApply={(p, a) => {
+            <EstimativaModal onApply={(p, a, i) => {
               if (p !== undefined) setPeso(p.toString());
               if (a !== undefined) setAltura(a.toString());
+              if (i !== undefined) setIdade(i.toString());
             }} />
           </div>
         </CardContent>
@@ -441,10 +442,10 @@ export default function CalculadoraPage() {
                 <div className="space-y-1 text-sm">
                   <div>{etapa.dieta.nome} - {etapa.volumeMl} ml</div>
                   {etapa.moduloProteina && (
-                    <div>{etapa.moduloProteina.nome} - {etapa.medidaProteina || 0} medida</div>
+                    <div>{etapa.moduloProteina.nome} - {etapa.medidaProteina || 0} {(etapa.medidaProteina || 0) > 1 ? "medidas" : "medida"}</div>
                   )}
                   {etapa.moduloFibra && (
-                    <div>{etapa.moduloFibra.nome} - {etapa.medidaFibra || 0} medida</div>
+                    <div>{etapa.moduloFibra.nome} - {etapa.medidaFibra || 0} {(etapa.medidaFibra || 0) > 1 ? "medidas" : "medida"}</div>
                   )}
                 </div>
               </div>
