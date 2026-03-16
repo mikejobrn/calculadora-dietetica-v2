@@ -133,6 +133,34 @@ describe("calcularResumoNutricional", () => {
     expect(resumo.adequacaoPTN).toBe(60); // 60/100 × 100
     expect(resumo.necessidadeHidrica).toBe(1950); // 65 × 30
   });
+
+  it("inclui calorias do módulo de proteína no VCT", () => {
+    const moduloProteina: ProdutoDieta = {
+      nome: "F. PROTEIN",
+      tipo: "modulo_proteina",
+      densidadeCalorica: null,
+      proteina: 4.4,
+      carboidrato: null,
+      lipidio: null,
+      fibra: null,
+    };
+
+    const etapasComModulo: EtapaDieta[] = [
+      {
+        horario: "08:00",
+        duracao: 12,
+        dieta: trophic,
+        volumeMl: 1000,
+        moduloProteina,
+        medidaProteina: 2,
+      },
+    ];
+
+    const resumo = calcularResumoNutricional(etapasComModulo, 2000, 100, 65);
+    // 1500 (dieta) + (8.8 g de MP * 4 kcal/g) = 1535.2 kcal, arredondado para 1535.
+    expect(resumo.vct).toBe(1535);
+    expect(resumo.mp).toBeCloseTo(8.8, 1);
+  });
 });
 
 // ==========================================================
