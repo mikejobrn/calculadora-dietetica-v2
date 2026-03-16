@@ -195,8 +195,8 @@ export function calcularResumoNutricional(
   vct += mp * 4;
 
   const biMedia = tempoInfusao > 0 ? Math.round((volumeTotal / tempoInfusao) * 10) / 10 : 0;
-  const adequacaoVCT = necessidadeCalorica > 0 ? Math.round((vct / necessidadeCalorica) * 1000) / 10 : 0;
-  const adequacaoPTN = necessidadeProteica > 0 ? Math.round((totalProteina / necessidadeProteica) * 1000) / 10 : 0;
+  const adequacaoVCT = necessidadeCalorica > 0 ? Math.round((vct / necessidadeCalorica) * 100) : 0;
+  const adequacaoPTN = necessidadeProteica > 0 ? Math.round((totalProteina / necessidadeProteica) * 100) : 0;
 
   const necessidadeCaloricaPorPeso = pesoKg > 0 ? Math.round((necessidadeCalorica / pesoKg) * 10) / 10 : 0;
   const necessidadeProteicaPorPeso = pesoKg > 0 ? Math.round((necessidadeProteica / pesoKg) * 10) / 10 : 0;

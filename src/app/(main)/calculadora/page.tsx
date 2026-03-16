@@ -51,6 +51,14 @@ function produtoToDieta(p: Produto): ProdutoDieta {
   };
 }
 
+function formatOneDecimal(value: number): string {
+  return value.toFixed(1);
+}
+
+function formatZeroDecimal(value: number): string {
+  return value.toFixed(0);
+}
+
 // ==========================================================
 // Main Calculator Component
 // ==========================================================
@@ -474,13 +482,13 @@ export default function CalculadoraPage() {
                 <strong>VCT:</strong> {resumo.vct} <strong className="ml-3">CHO:</strong> {resumo.carboidrato}
               </div>
               <div className="rounded-md bg-secondary px-3 py-2">
-                <strong>PTN:</strong> {resumo.ptn} <strong className="ml-3">MP:</strong> {resumo.mp} <strong className="ml-3">Total de Proteína:</strong> {resumo.totalProteina}
+                <strong>PTN:</strong> {formatOneDecimal(resumo.ptn)} <strong className="ml-3">MP:</strong> {formatOneDecimal(resumo.mp)} <strong className="ml-3">Total de Proteína:</strong> {formatOneDecimal(resumo.totalProteina)}
               </div>
               <div className="rounded-md bg-secondary px-3 py-2">
-                <strong>LIP:</strong> {resumo.lipidio}
+                <strong>LIP:</strong> {formatOneDecimal(resumo.lipidio)}
               </div>
               <div className="rounded-md bg-secondary px-3 py-2">
-                <strong>Fibras:</strong> {resumo.fibras} <strong className="ml-3">MF:</strong> {resumo.mf} <strong className="ml-3">Total Fibras:</strong> {resumo.totalFibras}
+                <strong>Fibras:</strong> {formatOneDecimal(resumo.fibras)} <strong className="ml-3">MF:</strong> {formatOneDecimal(resumo.mf)} <strong className="ml-3">Total Fibras:</strong> {formatOneDecimal(resumo.totalFibras)}
               </div>
             </div>
 
@@ -489,11 +497,11 @@ export default function CalculadoraPage() {
             <div className="space-y-2">
               <div className="rounded-md bg-secondary px-3 py-2 text-sm">
                 <p><strong>Necessidade calórica:</strong> {resumo.necessidadeCalorica} kcal ({resumo.necessidadeCaloricaPorPeso})</p>
-                <p><strong>Adequação VCT:</strong> {resumo.adequacaoVCT} %</p>
+                <p><strong>Adequação VCT:</strong> {formatZeroDecimal(resumo.adequacaoVCT)} %</p>
               </div>
               <div className="rounded-md bg-secondary px-3 py-2 text-sm">
                 <p><strong>Necessidade protéica:</strong> {resumo.necessidadeProteica} g ({resumo.necessidadeProteicaPorPeso})</p>
-                <p><strong>Adequação PTN:</strong> {resumo.adequacaoPTN} %</p>
+                <p><strong>Adequação PTN:</strong> {formatZeroDecimal(resumo.adequacaoPTN)} %</p>
               </div>
               <div className="rounded-md bg-secondary px-3 py-2 text-sm">
                 <strong>Necessidade hídrica:</strong> {resumo.necessidadeHidrica} ml
